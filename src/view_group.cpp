@@ -93,7 +93,7 @@ bool view_group::has_layout_requested_child() const {
 
 void view_group::draw(canvas &c) {
 	for(auto& child : this->children) {
-		canvas sub = c.sub_canvas(this->x + child->get_x(), this->y + child->get_y(), this->width, this->height);
+		canvas sub = c.sub_canvas(child->get_x(), child->get_y(), child->get_width(), child->get_height());
 		child->invoke_redraw(sub);
 	}
 }

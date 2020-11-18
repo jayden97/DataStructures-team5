@@ -16,7 +16,7 @@ void root_layout::add_child(view *child) {
 void root_layout::invalidate() {
 	if(!this->children.empty()) {
 		view* child = this->children[0];
-		canvas root = canvas(this->x + child->get_x(), this->y + child->get_y(), this->width, this->height);
+		canvas root = canvas(child->get_x(), child->get_y(), child->get_width(), child->get_height());
 		this->children[0]->invoke_redraw(root);
 	}
 }
