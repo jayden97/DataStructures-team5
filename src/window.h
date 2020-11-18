@@ -5,7 +5,7 @@
 
 class window {
 public:
-	window();
+	window(int width, int height);
 	~window();
 
 	void set_view(view* v);

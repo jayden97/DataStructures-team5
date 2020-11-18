@@ -19,6 +19,8 @@ public:
 
 	int get_width() const;
 	int get_height() const;
+
+	canvas sub_canvas(int x, int y, int min_width, int min_height) const;
 private:
 	static std::string eat_chunk(std::string& text, size_t max_width);
 

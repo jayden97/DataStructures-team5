@@ -1,7 +1,7 @@
 #include "linear_layout.h"
 
-linear_layout::linear_layout(orientation o):
-	orientation_value(o), occupied_size(0) {
+linear_layout::linear_layout(orientation o, int width, int height):
+	view_group(width, height), orientation_value(o), occupied_size(0) {
 	// intentional empty block
 }
 

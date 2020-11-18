@@ -85,3 +85,10 @@ int canvas::get_width() const {
 int canvas::get_height() const {
 	return this->height;
 }
+
+canvas canvas::sub_canvas(int sub_x, int sub_y, int max_width, int max_height) const {
+	using std::min;
+
+	return {translate_x + sub_x, translate_y + sub_y,
+			   min(max_width, width - sub_x), min(max_height, height - sub_y)};
+}

@@ -3,15 +3,16 @@
 #include "text_view.h"
 #include "window.h"
 #include "windows_thing.h"
+#include <iostream>
 
 using namespace std;
 
 int main() {
 	doWindowsStuff();
 
-	window w;
+	auto* w = new window(10, 10);
 
-	auto* layout = new linear_layout(VERTICAL);
+	auto* layout = new linear_layout(VERTICAL, 10, 10);
 	layout->set_xy(0, 0);
 	layout->set_width(10);
 	layout->set_height(10);
@@ -26,10 +27,13 @@ int main() {
 	tv2->set_height(2);
 	layout->add_child(tv2);
 
-	w.set_view(layout);
-	w.render();
+	w->set_view(layout);
+	w->render();
 
 	tv1->set_xy(5, 5);
+	tv1->set_width(5);
+
+	delete w;
 
 	return 0;
 }

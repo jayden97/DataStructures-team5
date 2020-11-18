@@ -8,7 +8,7 @@ class view_group: public view {
 public:
 	static const int TYPE = 1;
 
-	view_group();
+	view_group(int width, int height);
 	~view_group() override;
 
 	virtual void add_child(view* child);

@@ -10,7 +10,7 @@ enum orientation {
 
 class linear_layout: public view_group {
 public:
-	explicit linear_layout(orientation o = VERTICAL);
+	explicit linear_layout(orientation o = VERTICAL, int width = 0, int height = 0);
 
 	void add_child(view* child) override;
 	void destroy_child(int id) override;

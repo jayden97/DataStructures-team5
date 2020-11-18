@@ -1,7 +1,7 @@
 #include "window.h"
 
-window::window() {
-	this->root = new root_layout();
+window::window(int width, int height) {
+	this->root = new root_layout(width, height);
 }
 
 window::~window() {

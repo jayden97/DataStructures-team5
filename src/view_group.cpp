@@ -1,7 +1,7 @@
 #include <iostream>
 #include "view_group.h"
 
-view_group::view_group() {
+view_group::view_group(int width, int height): view(0, 0, width, height) {
 	this->children = std::vector<view*>();
 }
 
@@ -73,7 +73,8 @@ void view_group::invalidate(const rect &r) {
 
 void view_group::draw(const canvas &c) {
 	for(auto& child : this->children) {
-		child->invoke_redraw();
+		canvas sub = c.sub_canvas(this->x, this->y, this->width, this->height);
+		child->invoke_redraw(sub);
 	}
 }
 

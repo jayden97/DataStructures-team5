@@ -23,7 +23,7 @@ public:
 	virtual void invalidate(bool forward_parent);
 	virtual void invalidate(const rect& r, bool forward_parent);
 	bool must_redraw() const;
-	void invoke_redraw();
+	void invoke_redraw(canvas& c);
 
 	virtual void set_xy(int x, int y);
 	virtual void set_width(int new_width);

@@ -82,18 +82,19 @@ bool view::must_redraw() const {
 	return this->must_redrawn;
 }
 
-void view::invoke_redraw() {
+void view::invoke_redraw(canvas& root_canvas) {
 	if(!this->must_redrawn) return;
 
-	vector2 absolute = this->get_absolute_point();
-
 	if(this->background != nullptr) {
-		canvas background_canvas(absolute.get_x(), absolute.get_y(), this->width + 1, this->height);
+		canvas background_canvas = root_canvas.sub_canvas(
+				this->x, this->y, this->width, this->height
+		);
 		this->background->draw(background_canvas);
 	}
 
-	canvas c(absolute.get_x(), absolute.get_y(), this->width, this->height);
-	this->draw(c);
+	this->draw(root_canvas.sub_canvas(
+			this->x, this->y, this->width, this->height
+			));
 
 	this->last_drawn = vector2(this->x, this->y);
 	this->last_size = vector2(this->width, this->height);
@@ -138,8 +139,12 @@ int view::get_type() const {
 
 void view::set_width(int new_width) {
 	this->width = new_width;
+
+	this->invalidate();
 }
 
 void view::set_height(int new_height) {
 	this->height = new_height;
+
+	this->invalidate();
 }
