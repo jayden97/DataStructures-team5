@@ -42,7 +42,7 @@ void view_group::destroy_child(int id) {
 
 void view_group::invalidate() {
 	for(auto& child : this->children) {
-		child->invalidate();
+		child->invalidate(false);
 	}
 
 	view::invalidate();
