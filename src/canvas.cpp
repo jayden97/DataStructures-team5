@@ -69,3 +69,11 @@ void canvas::set_background_color(int value) {
 void canvas::set_background_bright(bool value) {
 	this->is_background_bright = value;
 }
+
+int canvas::get_translate_x() const {
+	return this->translate_x;
+}
+
+int canvas::get_translate_y() const {
+	return this->translate_y;
+}

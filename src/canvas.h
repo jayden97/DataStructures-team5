@@ -13,6 +13,9 @@ public:
 	void set_color(int color);
 	void set_background_color(int color);
 	void set_background_bright(bool value);
+
+	int get_translate_x() const;
+	int get_translate_y() const;
 private:
 	static std::string eat_chunk(std::string& text, size_t max_width);
 

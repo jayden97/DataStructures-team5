@@ -3,38 +3,60 @@
 
 #include <string>
 #include "canvas.h"
-#include "point.h"
+#include "vector2.h"
 #include "rect.h"
 
 class view {
 public:
+	static const int TYPE = 0;
+
 	view();
 	view(int x, int y, int width, int height);
 
+	virtual ~view();
+
+	int get_id() const;
+
 	virtual void invalidate();
 	virtual void invalidate(const rect& r);
+	bool must_redraw() const;
 	void invoke_redraw();
 
-	point get_absolute_point() const;
+	virtual void set_xy(int x, int y);
+	virtual void set_width(int new_width);
+	virtual void set_height(int new_height);
+	int get_x() const;
+	int get_y() const;
+	int get_width() const;
+	int get_height() const;
+
+	vector2 get_absolute_point() const;
 
 	virtual void draw(const canvas& c) = 0;
 
 	/** @internal */
 	void _set_parent(view* parent);
+	bool has_parent() const;
 
-private:
-	view* parent;
+	virtual int get_type() const;
 
+protected:
 	int x;
 	int y;
-
-	point last_drawn;
 
 	int width;
 	int height;
 
-	bool must_redrawn = false;
+private:
+	int id;
+
+	view* parent = nullptr;
+
+	vector2 last_drawn;
+
+	bool must_redrawn = true;
 };
 
+static int view_id = 0;
 
 #endif //DSP_TEAM_PROJECT_VIEW_H

@@ -1,17 +1,17 @@
 #ifndef DSP_TEAM_PROJECT_WINDOW_H
 #define DSP_TEAM_PROJECT_WINDOW_H
 
-#include "view.h"
+#include "root_layout.h"
 
 class window {
 public:
 	window();
 	~window();
 
-	void set_root(view* root);
-
+	void set_view(view* v);
+	void render() const;
 private:
-	view* root;
+	root_layout* root;
 };
 
 
