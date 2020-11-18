@@ -8,7 +8,7 @@ view::view():
 	this->y = 0;
 	this->width = 0;
 	this->height = 0;
-	this->background = new fill_drawable();
+	this->background = nullptr;
 }
 
 view::view(int x, int y, int width, int height):
@@ -18,7 +18,7 @@ view::view(int x, int y, int width, int height):
 	this->y = y;
 	this->width = width;
 	this->height = height;
-	this->background = new fill_drawable();
+	this->background = nullptr;
 }
 
 view::~view() {
@@ -86,15 +86,10 @@ void view::invoke_redraw(canvas& root_canvas) {
 	if(!this->must_redrawn) return;
 
 	if(this->background != nullptr) {
-		canvas background_canvas = root_canvas.sub_canvas(
-				this->x, this->y, this->width, this->height
-		);
-		this->background->draw(background_canvas);
+		this->background->draw(root_canvas);
 	}
 
-	this->draw(root_canvas.sub_canvas(
-			this->x, this->y, this->width, this->height
-			));
+	this->draw(root_canvas.sub_canvas(0, 0, this->width, this->height));
 
 	this->last_drawn = vector2(this->x, this->y);
 	this->last_size = vector2(this->width, this->height);
