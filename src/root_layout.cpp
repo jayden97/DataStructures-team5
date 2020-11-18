@@ -24,3 +24,7 @@ void root_layout::invalidate() {
 void root_layout::invalidate(const rect &r) {
 	this->invalidate();
 }
+
+void root_layout::refresh_layout() {
+	// this->invalidate();
+}

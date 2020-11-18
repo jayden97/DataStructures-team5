@@ -46,9 +46,9 @@ void view::invalidate(const rect &r) {
 }
 
 void view::invalidate(bool forward_parent) {
-	if(this->must_redrawn) return;
+	if(this->status_flag & FLAG_INVALIDATED) return;
 
-	this->must_redrawn = true;
+	this->status_flag |= FLAG_INVALIDATED;
 
 	if(forward_parent && this->parent != nullptr) {
 		this->parent->invalidate(rect(
@@ -59,8 +59,8 @@ void view::invalidate(bool forward_parent) {
 }
 
 void view::invalidate(const rect &r, bool forward_parent) {
-	if(this->must_redrawn) return;
-	this->must_redrawn = true;
+	if(this->status_flag & FLAG_INVALIDATED) return;
+	this->status_flag |= FLAG_INVALIDATED;
 
 	vector2 start_point = r.get_start();
 	vector2 end_point = r.get_end();
@@ -78,15 +78,28 @@ void view::invalidate(const rect &r, bool forward_parent) {
 	}
 }
 
+void view::refresh_layout() {
+	this->status_flag |= FLAG_INVALIDATE_LAYOUT;
+
+	if(this->parent != nullptr) {
+		this->parent->invalidate(rect(
+			vector2(this->x, this->x + this->width),
+			vector2(this->y, this->y + this->height)
+		));
+	}
+}
+
 bool view::must_redraw() const {
-	return this->must_redrawn;
+	return this->status_flag & FLAG_INVALIDATED;
 }
 
 void view::invoke_redraw(canvas& root_canvas) {
-	if(!this->must_redrawn) return;
+	if((this->status_flag & FLAG_INVALIDATED) == 0) return;
 
-	if(this->background != nullptr) {
-		this->background->draw(root_canvas);
+	if(this->status_flag & FLAG_INVALIDATE_LAYOUT) {
+		if(this->background != nullptr) {
+			this->background->draw(root_canvas);
+		}
 	}
 
 	canvas sub_canvas = root_canvas.sub_canvas(0, 0, this->width, this->height);
@@ -95,7 +108,7 @@ void view::invoke_redraw(canvas& root_canvas) {
 	this->last_drawn = vector2(this->x, this->y);
 	this->last_size = vector2(this->width, this->height);
 
-	this->must_redrawn = false;
+	this->status_flag = 0;
 }
 
 vector2 view::get_absolute_point() const {
@@ -114,7 +127,7 @@ void view::set_xy(int new_x, int new_y) {
 	this->x = new_x;
 	this->y = new_y;
 
-	this->invalidate();
+	this->refresh_layout();
 }
 
 int view::get_x() const {
@@ -140,11 +153,11 @@ int view::get_type() const {
 void view::set_width(int new_width) {
 	this->width = new_width;
 
-	this->invalidate();
+	this->refresh_layout();
 }
 
 void view::set_height(int new_height) {
 	this->height = new_height;
 
-	this->invalidate();
+	this->refresh_layout();
 }

@@ -48,18 +48,47 @@ void view_group::invalidate() {
 	view::invalidate();
 }
 
+bool is_in_middle(int target, int left, int right) {
+	return (target - left) * (target - right) < 0;
+}
+
+bool is_stacked(view* v, const rect &r) {
+	vector2 start = r.get_start();
+	vector2 end = r.get_end();
+
+	return (is_in_middle(start.get_x(), v->get_x(), v->get_x() + v->get_width())
+		|| is_in_middle(end.get_x(), v->get_x(), v->get_x() + v->get_width()))
+		&& (is_in_middle(start.get_y(), v->get_y(), v->get_y() + v->get_height())
+		|| is_in_middle(end.get_y(), v->get_y(), v->get_y() + v->get_height()));
+}
+
 void view_group::invalidate(const rect &r) {
+	bool must_request_layout = this->has_layout_requested_child();
+	if(must_request_layout) {
+		this->status_flag |= FLAG_INVALIDATE_LAYOUT;
+	}
+
 	vector2 start = r.get_start();
 	vector2 end = r.get_end();
 	for(auto& child : this->children) {
-		// do not forward again to me
-		child->invalidate(rect(
-				vector2(start.get_x() - this->x, start.get_y() - this->y),
-				vector2(end.get_x() - this->x, end.get_y() - this->y)
-		), false);
+		if(must_request_layout || is_stacked(child, r)) {
+			// do not forward again to me
+			child->invalidate(rect(
+					vector2(start.get_x() - this->x, start.get_y() - this->y),
+					vector2(end.get_x() - this->x, end.get_y() - this->y)
+			), false);
+		}
 	}
 
 	view::invalidate(r);
+}
+
+bool view_group::has_layout_requested_child() const {
+	for(auto& itr : this->children) {
+		if(itr->status_flag & FLAG_INVALIDATE_LAYOUT) return true;
+	}
+
+	return false;
 }
 
 void view_group::draw(canvas &c) {

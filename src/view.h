@@ -9,6 +9,9 @@
 
 class view {
 public:
+	static const int FLAG_INVALIDATED = 1;
+	static const int FLAG_INVALIDATE_LAYOUT = 1 << 1;
+
 	static const int TYPE = 0;
 
 	view();
@@ -22,6 +25,8 @@ public:
 	virtual void invalidate(const rect& r);
 	virtual void invalidate(bool forward_parent);
 	virtual void invalidate(const rect& r, bool forward_parent);
+	virtual void refresh_layout();
+
 	bool must_redraw() const;
 	void invoke_redraw(canvas& c);
 
@@ -45,6 +50,8 @@ public:
 
 	virtual int get_type() const;
 
+	unsigned int status_flag = FLAG_INVALIDATE_LAYOUT | FLAG_INVALIDATED;
+
 protected:
 	int x;
 	int y;
@@ -61,8 +68,6 @@ private:
 	vector2 last_size;
 
 	drawable* background;
-
-	bool must_redrawn = true;
 };
 
 static int view_id = 0;

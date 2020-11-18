@@ -26,6 +26,9 @@ public:
 
 protected:
 	std::vector<view*> children;
+
+private:
+	bool has_layout_requested_child() const;
 };
 
 #endif //DSP_TEAM_PROJECT_VIEW_GROUP_H
