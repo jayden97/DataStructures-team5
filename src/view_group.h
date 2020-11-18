@@ -15,8 +15,8 @@ public:
 	view* get_child(int id);
 	virtual void destroy_child(int id);
 
-	void invalidate() override;
-	void invalidate(const rect& r) override;
+	void invalidate(bool forward_parent) override;
+	void invalidate(const rect& r, bool forward_parent) override;
 
 	void draw(canvas& c) override;
 

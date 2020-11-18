@@ -79,14 +79,16 @@ void view::invalidate(const rect &r, bool forward_parent) {
 }
 
 void view::refresh_layout() {
+	this->refresh_layout(true);
+}
+
+void view::refresh_layout(bool forward_parent) {
 	this->status_flag |= FLAG_INVALIDATE_LAYOUT;
 
-	if(this->parent != nullptr) {
-		this->parent->invalidate(rect(
+	this->invalidate(rect(
 			vector2(this->x, this->x + this->width),
 			vector2(this->y, this->y + this->height)
-		));
-	}
+	), forward_parent);
 }
 
 bool view::must_redraw() const {
@@ -94,8 +96,6 @@ bool view::must_redraw() const {
 }
 
 void view::invoke_redraw(canvas& root_canvas) {
-	if((this->status_flag & FLAG_INVALIDATED) == 0) return;
-
 	if(this->status_flag & FLAG_REDRAW_BACKGROUND) {
 		if(this->background != nullptr) {
 			this->background->draw(root_canvas);

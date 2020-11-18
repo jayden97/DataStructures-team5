@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "view_group.h"
 
 view_group::view_group(int width, int height): view(0, 0, width, height) {
@@ -40,12 +41,12 @@ void view_group::destroy_child(int id) {
 	}
 }
 
-void view_group::invalidate() {
+void view_group::invalidate(bool forward_parent) {
 	for(auto& child : this->children) {
 		child->invalidate(false);
 	}
 
-	view::invalidate();
+	view::invalidate(forward_parent);
 }
 
 bool is_in_middle(int target, int left, int right) {
@@ -62,8 +63,9 @@ bool is_stacked(view* v, const rect &r) {
 		|| is_in_middle(end.get_y(), v->get_y(), v->get_y() + v->get_height()));
 }
 
-void view_group::invalidate(const rect &r) {
-	bool must_request_layout = this->has_layout_requested_child();
+void view_group::invalidate(const rect &r, bool forward_parent) {
+	bool must_request_layout = (this->status_flag & FLAG_INVALIDATE_LAYOUT)
+			|| this->has_layout_requested_child();
 	if(must_request_layout) {
 		this->status_flag |= FLAG_REDRAW_BACKGROUND;
 	}
@@ -80,15 +82,13 @@ void view_group::invalidate(const rect &r) {
 		}
 	}
 
-	view::invalidate(r);
+	view::invalidate(r, forward_parent);
 }
 
 bool view_group::has_layout_requested_child() const {
-	for(auto& itr : this->children) {
-		if(itr->status_flag & FLAG_INVALIDATE_LAYOUT) return true;
-	}
-
-	return false;
+	return std::any_of(this->children.begin(), this->children.end(), [](view* v) {
+		return v->status_flag & FLAG_INVALIDATE_LAYOUT;
+	});
 }
 
 void view_group::draw(canvas &c) {
