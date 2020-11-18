@@ -18,7 +18,7 @@ public:
 	void invalidate() override;
 	void invalidate(const rect& r) override;
 
-	void draw(const canvas& c) override;
+	void draw(canvas& c) override;
 
 	std::vector<view*> get_children() const;
 

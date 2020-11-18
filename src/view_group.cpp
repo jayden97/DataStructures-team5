@@ -62,7 +62,7 @@ void view_group::invalidate(const rect &r) {
 	view::invalidate(r);
 }
 
-void view_group::draw(const canvas &c) {
+void view_group::draw(canvas &c) {
 	for(auto& child : this->children) {
 		canvas sub = c.sub_canvas(this->x + child->get_x(), this->y + child->get_y(), this->width, this->height);
 		child->invoke_redraw(sub);

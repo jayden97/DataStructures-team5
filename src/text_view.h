@@ -7,7 +7,7 @@ class text_view: public view {
 public:
 	explicit text_view(std::string text_value);
 
-	void draw(const canvas& c) override;
+	void draw(canvas& c) override;
 
 private:
 	std::string text;

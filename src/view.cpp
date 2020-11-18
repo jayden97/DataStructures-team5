@@ -89,7 +89,8 @@ void view::invoke_redraw(canvas& root_canvas) {
 		this->background->draw(root_canvas);
 	}
 
-	this->draw(root_canvas.sub_canvas(0, 0, this->width, this->height));
+	canvas sub_canvas = root_canvas.sub_canvas(0, 0, this->width, this->height);
+	this->draw(sub_canvas);
 
 	this->last_drawn = vector2(this->x, this->y);
 	this->last_size = vector2(this->width, this->height);

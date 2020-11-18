@@ -37,7 +37,7 @@ public:
 
 	void set_background(drawable* new_background);
 
-	virtual void draw(const canvas& c) = 0;
+	virtual void draw(canvas& c) = 0;
 
 	/** @internal */
 	void _set_parent(view* parent);
