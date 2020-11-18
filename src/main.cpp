@@ -12,7 +12,7 @@ int main() {
 	window w;
 
 	auto* layout = new linear_layout(VERTICAL);
-	layout->set_xy(1, 1);
+	layout->set_xy(0, 0);
 	layout->set_width(10);
 	layout->set_height(10);
 
@@ -28,6 +28,8 @@ int main() {
 
 	w.set_view(layout);
 	w.render();
+
+	tv1->set_xy(5, 5);
 
 	return 0;
 }

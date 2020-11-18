@@ -53,6 +53,7 @@ private:
 	view* parent = nullptr;
 
 	vector2 last_drawn;
+	vector2 last_size;
 
 	bool must_redrawn = true;
 };
