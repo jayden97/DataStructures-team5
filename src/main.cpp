@@ -1,11 +1,12 @@
+#include "canvas.h"
 #include "windows_thing.h"
-#include <iostream>
+
+using namespace std;
 
 int main() {
 	doWindowsStuff();
 
-	std::cout << "\x1b[10;5H" << "HELLO!" << std::endl;
-	std::cout << "World" << std::endl;
-
+	canvas c(5, 5, 20, 10);
+	c.draw_text("this is canvas\nwhich will help you\ndraw something on console.");
 	return 0;
 }
