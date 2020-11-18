@@ -10,7 +10,9 @@ void root_layout::add_child(view *child) {
 }
 
 void root_layout::invalidate() {
-	redraw_all(this);
+	if(!this->children.empty()) {
+		redraw_all(this->children[0]);
+	}
 }
 
 void root_layout::invalidate(const rect &r) {
@@ -22,11 +24,11 @@ void root_layout::redraw_all(view* target) const {
 		target->invoke_redraw();
 	}
 
-	if(target->get_type() == view_group::TYPE) {
-		auto* group = dynamic_cast<view_group*>(target);
-		auto children = group->get_children();
-		for(auto& itr : children) {
+	/*auto* group = dynamic_cast<view_group*>(target);
+	auto children = group->get_children();
+	for(auto& itr : children) {
+		if(itr->get_type() == view_group::TYPE) {
 			redraw_all(itr);
 		}
-	}
+	}*/
 }

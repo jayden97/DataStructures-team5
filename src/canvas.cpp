@@ -77,3 +77,11 @@ int canvas::get_translate_x() const {
 int canvas::get_translate_y() const {
 	return this->translate_y;
 }
+
+int canvas::get_width() const {
+	return this->width;
+}
+
+int canvas::get_height() const {
+	return this->height;
+}

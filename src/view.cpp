@@ -1,3 +1,4 @@
+#include "fill_drawable.h"
 #include "view.h"
 
 view::view():
@@ -7,6 +8,7 @@ view::view():
 	this->y = 0;
 	this->width = 0;
 	this->height = 0;
+	this->background = new fill_drawable();
 }
 
 view::view(int x, int y, int width, int height):
@@ -16,9 +18,12 @@ view::view(int x, int y, int width, int height):
 	this->y = y;
 	this->width = width;
 	this->height = height;
+	this->background = new fill_drawable();
 }
 
-view::~view() = default;
+view::~view() {
+	delete this->background;
+}
 
 int view::get_id() const {
 	return this->id;
@@ -33,11 +38,19 @@ bool view::has_parent() const {
 }
 
 void view::invalidate() {
+	this->invalidate(true);
+}
+
+void view::invalidate(const rect &r) {
+	this->invalidate(r, true);
+}
+
+void view::invalidate(bool forward_parent) {
 	if(this->must_redrawn) return;
 
 	this->must_redrawn = true;
 
-	if(this->parent != nullptr) {
+	if(forward_parent && this->parent != nullptr) {
 		this->parent->invalidate(rect(
 				vector2(this->x, this->y),
 				vector2(this->x + this->width, this->y + this->height)
@@ -45,7 +58,7 @@ void view::invalidate() {
 	}
 }
 
-void view::invalidate(const rect &r) {
+void view::invalidate(const rect &r, bool forward_parent) {
 	if(this->must_redrawn) return;
 	this->must_redrawn = true;
 
@@ -57,11 +70,11 @@ void view::invalidate(const rect &r) {
 	int end_x = end_point.get_x();
 	int end_y = end_point.get_y();
 
-	if(this->parent != nullptr) {
+	if(forward_parent && this->parent != nullptr) {
 		this->parent->invalidate(rect(
 				vector2(start_x + this->x, start_y + this->y),
 				vector2(end_x + this->x, end_y + this->y)
-				));
+		));
 	}
 }
 
@@ -72,26 +85,15 @@ bool view::must_redraw() const {
 void view::invoke_redraw() {
 	if(!this->must_redrawn) return;
 
-	int last_x = this->last_drawn.get_x();
-	int last_y = this->last_drawn.get_y();
-	if(last_x != -1) {
-		int last_width = this->last_size.get_x();
-		int last_height = this->last_size.get_y();
+	vector2 absolute = this->get_absolute_point();
 
-		if(last_x != this->x || last_y != this->y
-			|| last_width != this->width || last_height != this->height) {
-			if(this->parent != nullptr) {
-				this->parent->invalidate(rect(
-						vector2(last_x, last_y),
-						vector2(last_x + last_width, last_y + last_height)
-						));
-			}
-		}
+	if(this->background != nullptr) {
+		canvas background_canvas(absolute.get_x(), absolute.get_y(), this->width + 1, this->height);
+		this->background->draw(background_canvas);
 	}
 
-	vector2 absolute = this->get_absolute_point();
 	canvas c(absolute.get_x(), absolute.get_y(), this->width, this->height);
-	draw(c);
+	this->draw(c);
 
 	this->last_drawn = vector2(this->x, this->y);
 	this->last_size = vector2(this->width, this->height);

@@ -3,6 +3,7 @@
 
 #include <string>
 #include "canvas.h"
+#include "drawable.h"
 #include "vector2.h"
 #include "rect.h"
 
@@ -19,6 +20,8 @@ public:
 
 	virtual void invalidate();
 	virtual void invalidate(const rect& r);
+	virtual void invalidate(bool forward_parent);
+	virtual void invalidate(const rect& r, bool forward_parent);
 	bool must_redraw() const;
 	void invoke_redraw();
 
@@ -54,6 +57,8 @@ private:
 
 	vector2 last_drawn;
 	vector2 last_size;
+
+	drawable* background;
 
 	bool must_redrawn = true;
 };

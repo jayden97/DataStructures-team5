@@ -60,10 +60,11 @@ void view_group::invalidate(const rect &r) {
 		   || is_middle(child->get_x() + child->get_width(), start.get_x(), end.get_x())
 		   || is_middle(child->get_y(), start.get_y(), end.get_y())
 		   || is_middle(child->get_y() + child->get_height(), start.get_y(), end.get_y())) {
+			// do not forward again to me
 			child->invalidate(rect(
 					vector2(start.get_x() - this->x, start.get_y() - this->y),
 					vector2(end.get_x() - this->x, end.get_y() - this->y)
-			));
+			), false);
 		}
 	}
 

@@ -16,6 +16,9 @@ public:
 
 	int get_translate_x() const;
 	int get_translate_y() const;
+
+	int get_width() const;
+	int get_height() const;
 private:
 	static std::string eat_chunk(std::string& text, size_t max_width);
 
