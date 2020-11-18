@@ -6,6 +6,8 @@
 class canvas {
 public:
 	canvas(int translate_x, int translate_y, int width, int height);
+	canvas(int translate_x, int translate_y, int width, int height,
+	               int color, int background_color, bool is_background_bright);
 
 	void move_to(int x, int y);
 	void draw_text(std::string draw_text) const;

@@ -1,4 +1,5 @@
 #include "canvas.h"
+#include "fill_drawable.h"
 #include "linear_layout.h"
 #include "text_view.h"
 #include "window.h"
@@ -14,6 +15,7 @@ int main() {
 
 	auto* layout = new linear_layout(VERTICAL, 10, 10);
 	layout->set_xy(0, 0);
+	layout->set_background(new fill_drawable(ansi::BACKGROUND_BLUE));
 	layout->set_width(10);
 	layout->set_height(10);
 

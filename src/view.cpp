@@ -110,6 +110,10 @@ vector2 view::get_absolute_point() const {
 	return {parent_point.get_x() + this->x, parent_point.get_y() + this->y};
 }
 
+void view::set_background(drawable* new_background) {
+	this->background = new_background;
+}
+
 void view::set_xy(int new_x, int new_y) {
 	this->x = new_x;
 	this->y = new_y;

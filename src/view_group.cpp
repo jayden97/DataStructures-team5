@@ -48,24 +48,15 @@ void view_group::invalidate() {
 	view::invalidate();
 }
 
-bool is_middle(int target, int left, int right) {
-	return (left - target) * (right - target) < 0;
-}
-
 void view_group::invalidate(const rect &r) {
 	vector2 start = r.get_start();
 	vector2 end = r.get_end();
 	for(auto& child : this->children) {
-		if(is_middle(child->get_x(), start.get_x(), end.get_x())
-		   || is_middle(child->get_x() + child->get_width(), start.get_x(), end.get_x())
-		   || is_middle(child->get_y(), start.get_y(), end.get_y())
-		   || is_middle(child->get_y() + child->get_height(), start.get_y(), end.get_y())) {
-			// do not forward again to me
-			child->invalidate(rect(
-					vector2(start.get_x() - this->x, start.get_y() - this->y),
-					vector2(end.get_x() - this->x, end.get_y() - this->y)
-			), false);
-		}
+		// do not forward again to me
+		child->invalidate(rect(
+				vector2(start.get_x() - this->x, start.get_y() - this->y),
+				vector2(end.get_x() - this->x, end.get_y() - this->y)
+		), false);
 	}
 
 	view::invalidate(r);

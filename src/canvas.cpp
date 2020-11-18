@@ -11,6 +11,14 @@ canvas::canvas(int translate_x, int translate_y, int width, int height)
 	// intentional empty code block
 }
 
+canvas::canvas(int translate_x, int translate_y, int width, int height,
+			   int color, int background_color, bool is_background_bright)
+		: translate_x(translate_x), translate_y(translate_y), width(width), height(height),
+		  is_background_bright(is_background_bright), background_color(background_color),
+		  x(0), y(0), color(color) {
+	// intentional empty code block
+}
+
 void canvas::move_to(int new_x, int new_y) {
 	this->x = new_x;
 	this->y = new_y;
@@ -90,5 +98,6 @@ canvas canvas::sub_canvas(int sub_x, int sub_y, int max_width, int max_height) c
 	using std::min;
 
 	return {translate_x + sub_x, translate_y + sub_y,
-			   min(max_width, width - sub_x), min(max_height, height - sub_y)};
+			   min(max_width, width - sub_x), min(max_height, height - sub_y),
+			   this->color, this->background_color, this->is_background_bright};
 }

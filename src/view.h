@@ -35,6 +35,8 @@ public:
 
 	vector2 get_absolute_point() const;
 
+	void set_background(drawable* new_background);
+
 	virtual void draw(const canvas& c) = 0;
 
 	/** @internal */
