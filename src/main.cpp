@@ -22,6 +22,7 @@ int main() {
 	auto* tv1 = new text_view("hello world\nasdf");
 	tv1->set_width(12);
 	tv1->set_height(3);
+	tv1->set_text_color(ansi::CYAN);
 	layout->add_child(tv1);
 
 	auto* tv2 = new text_view("good");
@@ -34,6 +35,9 @@ int main() {
 
 	tv1->set_xy(5, 5);
 	tv1->set_width(5);
+	tv1->set_text_color(ansi::MAGENTA);
+
+	tv2->set_text("great");
 
 	delete w;
 
