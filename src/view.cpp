@@ -96,7 +96,7 @@ bool view::must_redraw() const {
 void view::invoke_redraw(canvas& root_canvas) {
 	if((this->status_flag & FLAG_INVALIDATED) == 0) return;
 
-	if(this->status_flag & FLAG_INVALIDATE_LAYOUT) {
+	if(this->status_flag & FLAG_REDRAW_BACKGROUND) {
 		if(this->background != nullptr) {
 			this->background->draw(root_canvas);
 		}

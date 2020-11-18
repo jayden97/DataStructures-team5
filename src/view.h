@@ -11,6 +11,7 @@ class view {
 public:
 	static const int FLAG_INVALIDATED = 1;
 	static const int FLAG_INVALIDATE_LAYOUT = 1 << 1;
+	static const int FLAG_REDRAW_BACKGROUND = 1 << 2;
 
 	static const int TYPE = 0;
 

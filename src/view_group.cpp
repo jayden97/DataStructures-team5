@@ -65,7 +65,7 @@ bool is_stacked(view* v, const rect &r) {
 void view_group::invalidate(const rect &r) {
 	bool must_request_layout = this->has_layout_requested_child();
 	if(must_request_layout) {
-		this->status_flag |= FLAG_INVALIDATE_LAYOUT;
+		this->status_flag |= FLAG_REDRAW_BACKGROUND;
 	}
 
 	vector2 start = r.get_start();
