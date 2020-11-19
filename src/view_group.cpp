@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <functional>
 #include "view_group.h"
 
 view_group::view_group(int width, int height): view(0, 0, width, height) {
@@ -93,9 +94,31 @@ bool view_group::has_layout_requested_child() const {
 
 void view_group::draw(canvas &c) {
 	for(auto& child : this->children) {
+		drawable* top_background = this->get_top_background();
+
+		if((child->status_flag & FLAG_INVALIDATED) && (this->status_flag & FLAG_REDRAW_BACKGROUND) == 0) {
+			std::function<bool(int, int)> mask = [&child](int x, int y) -> bool {
+				return child->get_x() <= x && x < child->get_x() + child->get_width()
+					&& child->get_y() <= y && y < child->get_y() + child->get_height();
+			};
+			canvas background_canvas = c.sub_canvas(0, 0, c.get_width(), c.get_height(), &mask);
+			top_background->draw(background_canvas);
+		}
+
 		canvas sub = c.sub_canvas(child->get_x(), child->get_y(), child->get_width(), child->get_height());
 		child->invoke_redraw(sub);
 	}
+}
+
+drawable* view_group::get_top_background() const {
+	const view* ptr = this;
+	while(ptr->get_background() == nullptr) {
+		ptr = ptr->get_parent();
+
+		if(ptr == nullptr) return nullptr;
+	}
+
+	return ptr->get_background();
 }
 
 std::vector<view*> view_group::get_children() const {

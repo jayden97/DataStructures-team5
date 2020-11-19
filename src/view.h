@@ -43,16 +43,18 @@ public:
 	vector2 get_absolute_point() const;
 
 	void set_background(drawable* new_background);
+	drawable* get_background() const;
 
 	virtual void draw(canvas& c) = 0;
 
 	/** @internal */
 	void _set_parent(view* parent);
 	bool has_parent() const;
+	view* get_parent() const;
 
 	virtual int get_type() const;
 
-	unsigned int status_flag = FLAG_INVALIDATE_LAYOUT | FLAG_INVALIDATED;
+	unsigned int status_flag = FLAG_INVALIDATE_LAYOUT | FLAG_INVALIDATED | FLAG_REDRAW_BACKGROUND;
 
 protected:
 	int x;
@@ -61,6 +63,8 @@ protected:
 	int width;
 	int height;
 
+	drawable* background;
+
 private:
 	int id;
 
@@ -68,8 +72,6 @@ private:
 
 	vector2 last_drawn;
 	vector2 last_size;
-
-	drawable* background;
 };
 
 static int view_id = 0;

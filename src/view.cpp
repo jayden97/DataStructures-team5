@@ -37,6 +37,10 @@ bool view::has_parent() const {
 	return this->parent != nullptr;
 }
 
+view* view::get_parent() const {
+	return this->parent;
+}
+
 void view::invalidate() {
 	this->invalidate(true);
 }
@@ -121,6 +125,10 @@ vector2 view::get_absolute_point() const {
 
 void view::set_background(drawable* new_background) {
 	this->background = new_background;
+}
+
+drawable* view::get_background() const {
+	return this->background;
 }
 
 void view::set_xy(int new_x, int new_y) {

@@ -6,6 +6,7 @@ text_view::text_view(std::string text_value) {
 
 void text_view::draw(canvas &c) {
 	c.set_color(this->text_color);
+	c.set_background_color(ansi::TRANSPARENT);
 	c.draw_text(this->text);
 }
 

@@ -38,7 +38,7 @@ int main() {
 	tv1->set_text_color(ansi::MAGENTA);
 
 	tv2->set_text("great");
-	layout->refresh_layout();
+	tv1->set_text("g");
 
 	delete w;
 

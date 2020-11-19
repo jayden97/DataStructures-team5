@@ -29,6 +29,7 @@ protected:
 
 private:
 	bool has_layout_requested_child() const;
+	drawable* get_top_background() const;
 };
 
 #endif //DSP_TEAM_PROJECT_VIEW_GROUP_H

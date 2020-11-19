@@ -12,6 +12,7 @@ public:
 	static const int CYAN = 36;
 	static const int WHITE = 37;
 	static const int RESET = 0;
+	static const int TRANSPARENT = -1;
 
 	static const int BACKGROUND_BLACK = 40;
 	static const int BACKGROUND_RED = 41;
@@ -24,6 +25,8 @@ public:
 
 	static void move_cursor(int x, int y);
 	static void set_colors(int color, int background_color, bool brighten = false);
+	static bool validate_color(int color);
+	static bool validate_background_color(int background_color);
 };
 
 #endif //DSP_TEAM_PROJECT_ANSI_H

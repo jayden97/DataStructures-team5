@@ -4,18 +4,18 @@
 #include <iostream>
 #include <string>
 
-canvas::canvas(int translate_x, int translate_y, int width, int height)
+canvas::canvas(int translate_x, int translate_y, int width, int height, mask_filter mask)
 	: translate_x(translate_x), translate_y(translate_y), width(width), height(height),
 	is_background_bright(false), background_color(ansi::BACKGROUND_BLACK),
-	x(0), y(0), color(ansi::WHITE) {
+	x(0), y(0), color(ansi::WHITE), mask(mask) {
 	// intentional empty code block
 }
 
 canvas::canvas(int translate_x, int translate_y, int width, int height,
-			   int color, int background_color, bool is_background_bright)
+			   int color, int background_color, bool is_background_bright, mask_filter mask)
 		: translate_x(translate_x), translate_y(translate_y), width(width), height(height),
 		  is_background_bright(is_background_bright), background_color(background_color),
-		  x(0), y(0), color(color) {
+		  x(0), y(0), color(color), mask(mask) {
 	// intentional empty code block
 }
 
@@ -32,9 +32,20 @@ void canvas::draw_text(std::string text) const {
 		size_t max_width = max(0, this->width - this->x);
 		std::string chunk = eat_chunk(text, max_width);
 
-		ansi::move_cursor(this->translate_x + this->x + 1, this->translate_y + current_y + 1);
 		ansi::set_colors(this->color, this->background_color, this->is_background_bright);
-		std::cout << chunk;
+
+		if(this->mask == nullptr) {
+			ansi::move_cursor(this->translate_x + this->x + 1, this->translate_y + current_y + 1);
+			std::cout << chunk;
+		}else{
+			int chunk_len = chunk.length();
+			for(int i = 0; i < chunk_len; ++i) {
+				if((*this->mask)(this->x + i, current_y)) {
+					ansi::move_cursor(this->translate_x + this->x + i + 1, this->translate_y + current_y + 1);
+					std::cout << chunk[i];
+				}
+			}
+		}
 
 		++current_y;
 	}
@@ -61,14 +72,14 @@ std::string canvas::eat_chunk(std::string& text, size_t max_width) {
 }
 
 void canvas::set_color(int new_color) {
-	if((new_color < 30 || 37 < new_color) && new_color != 0)
+	if(!ansi::validate_color(new_color))
 		throw std::invalid_argument("canvas: invalid color given");
 
 	this->color = new_color;
 }
 
 void canvas::set_background_color(int value) {
-	if((value < 40 || 47 < value) && value != 0)
+	if(!ansi::validate_background_color(value))
 		throw std::invalid_argument("canvas: invalid background color given");
 
 	this->background_color = value;
@@ -94,10 +105,10 @@ int canvas::get_height() const {
 	return this->height;
 }
 
-canvas canvas::sub_canvas(int sub_x, int sub_y, int max_width, int max_height) const {
+canvas canvas::sub_canvas(int sub_x, int sub_y, int max_width, int max_height, mask_filter filter) const {
 	using std::min;
 
 	return {translate_x + sub_x, translate_y + sub_y,
 			   min(max_width, width - sub_x), min(max_height, height - sub_y),
-			   this->color, this->background_color, this->is_background_bright};
+			   this->color, this->background_color, this->is_background_bright, filter};
 }
