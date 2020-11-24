@@ -9,12 +9,6 @@
 #define ADMIN_PASSWORD 1111
 
 using namespace std;
-void adminSigHandler(int signum);
-void adminMode();
-void showAdminMenu();
-int inputMenu();
-void addMoiveList();
-void deleteMovieList();
 
 class Movie {
   public:
@@ -39,7 +33,18 @@ class Movie {
 
 class Cinema {
   public:
-    Cinema() { movieNumber = 1; }
+    Cinema() {
+		movieNumber = 1;
+
+		if(instance == nullptr) {
+			instance = this;
+		}
+    }
+
+    ~Cinema() {
+    	delete instance;
+    }
+
 
     int generate_movieNumber() {
         //영화고유번호 방식 나중에 바꿀수도 있음.
@@ -70,7 +75,13 @@ class Cinema {
         return menuNum;
     }
 
-    void adminSigHandler(int signum) {
+	static void signalHandler(int signum) {
+		if(instance != nullptr) {
+			instance->adminSigHandler(signum);
+		}
+	}
+
+	void adminSigHandler(int signum) {
         // pid를 받으면 관리자 모드 진입을 위한 핸들러
         int password;
         if (signum == SIGUSR1) {
@@ -131,7 +142,7 @@ class Cinema {
                 reserveMovie();
                 break;
             case 3:
-                reserveCancle();
+                reserveCancel();
                 break;
             case 4:
                 reserveCheck();
@@ -154,21 +165,28 @@ class Cinema {
     void searchMovie() {}
     void listReserve() {}
     void reserveMovie() {}
-    void reserveCancle() {}
+    void reserveCancel() {}
     void reserveCheck() {}
 
   private:
+	static Cinema* instance;
+
     list<Movie> movieList;
     int movieNumber;
 };
 
+Cinema* Cinema::instance;
+
 int main(int argc, char const *argv[]) {
     doWindowsStuff();
-    Cinema cinema = Cinema();
-    cinema.startProgram();
+    Cinema cinema;
 
-    if (signal(SIGUSR1, adminSigHandler) == SIG_ERR)
-        perror("adminSigHandler() error!");
+	if (signal(SIGUSR1, Cinema::signalHandler) == SIG_ERR) {
+		perror("adminSigHandler() error!");
+	}
+
+	cinema.startProgram();
+
     while (1) {
         pause();
     }
