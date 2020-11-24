@@ -55,6 +55,71 @@ class Cinema {
         cout << "4. 예약조회 및 좌석확인" << endl;
         cout << "5. 종료" << endl;
     }
+
+    void showAdminMenu() {
+        cout << "관리자 모드" << endl;
+        cout << "1. 영화 추가" << endl;
+        cout << "2. 영화 삭제" << endl;
+        cout << "3. 메인 으로" << endl;
+    }
+
+    int inputMenu() {
+        int menuNum;
+        cout << "입력 : " << endl;
+        cin >> menuNum;
+        return menuNum;
+    }
+
+    void adminSigHandler(int signum) {
+        // pid를 받으면 관리자 모드 진입을 위한 핸들러
+        int password;
+        if (signum == SIGUSR1) {
+            cout << "비밀번호 입력";
+            cin >> password;
+            if (ADMIN_PASSWORD == password)
+                adminMode();
+            else {
+                cout << "비밀번호가 틀립니다." << endl;
+                return;
+            }
+        }
+    }
+    //관리자 모드 함수
+    void adminMode() {
+        showAdminMenu();
+        switch (inputMenu()) {
+        case 1:
+            addMovieList();
+            break;
+        case 2:
+            deleteMovieList();
+            break;
+        case 3:
+            //메인으로
+            break;
+        default:
+            cout << "잘못입력하셨습니다." << endl;
+        }
+    }
+
+    //영화 추가
+    void addMovieList() {
+        Cinema add;
+        Movie movies;
+        string name, genre;
+
+        add.printMovieList();
+        cout << "추가 할 영화 정보 입력" << endl;
+        cout << "영화 이름";
+        getline(cin, name);
+        cout << "영화 장르";
+        getline(cin, genre);
+        movies.setName(name);
+        movies.setGenre(genre);
+    }
+    //영화 삭제
+    void deleteMovieList() {}
+
     //영화 목록을 출력
     void printMovieList() {}
 
@@ -72,7 +137,7 @@ class Cinema {
 
 int main(int argc, char const *argv[]) {
     doWindowsStuff();
-
+    Cinema c1;
     if (signal(SIGUSR1, adminSigHandler) == SIG_ERR)
         perror("adminSigHandler() error!");
     while (1) {
@@ -81,67 +146,3 @@ int main(int argc, char const *argv[]) {
 
     return 0;
 }
-
-void showAdminMenu() {
-    cout << "관리자 모드" << endl;
-    cout << "1. 영화 추가" << endl;
-    cout << "2. 영화 삭제" << endl;
-    cout << "3. 메인 으로" << endl;
-}
-
-int inputMenu() {
-    int menuNum;
-    cout << "입력 : " << endl;
-    cin >> menuNum;
-    return menuNum;
-}
-
-void adminSigHandler(int signum) {
-    // pid를 받으면 관리자 모드 진입을 위한 핸들러
-    int password;
-    if (signum == SIGUSR1) {
-        cout << "비밀번호 입력";
-        cin >> password;
-        if (ADMIN_PASSWORD == password)
-            adminMode();
-        else {
-            cout << "비밀번호가 틀립니다." << endl;
-            return;
-        }
-    }
-}
-//관리자 모드 함수
-void adminMode() {
-    showAdminMenu();
-    switch (inputMenu()) {
-    case 1:
-        addMovieList();
-        break;
-    case 2:
-        deleteMovieList();
-        break;
-    case 3:
-        //메인으로
-        break;
-    default:
-        cout << "잘못입력하셨습니다." << endl;
-    }
-}
-
-//영화 추가
-void addMovieList() {
-    Cinema add;
-    Movie movies;
-    string name, genre;
-
-    add.printMovieList();
-    cout << "추가 할 영화 정보 입력" << endl;
-    cout << "영화 이름";
-    getline(cin, name);
-    cout << "영화 장르";
-    getline(cin, genre);
-    movies.setName(name);
-    movies.setGenre(genre);
-}
-//영화 삭제
-void deleteMovieList() {}
