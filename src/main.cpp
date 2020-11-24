@@ -9,12 +9,6 @@
 #define ADMIN_PASSWORD 1111
 
 using namespace std;
-void adminSigHandler(int signum);
-void adminMode();
-void showAdminMenu();
-int inputMenu();
-void addMoiveList();
-void deleteMovieList();
 
 class Movie {
   public:
@@ -39,7 +33,15 @@ class Movie {
 
 class Cinema {
   public:
-    Cinema() {}
+    Cinema() {
+      if(instance == nullptr) {
+      	instance = this;
+      }
+    }
+
+    ~Cinema() {
+      delete instance;
+    }
 
     int generate_movieNumber() {
         //영화고유번호 방식 나중에 바꿀수도 있음.
@@ -70,7 +72,13 @@ class Cinema {
         return menuNum;
     }
 
-    void adminSigHandler(int signum) {
+	static void signalHandler(int signum) {
+		if(instance != nullptr) {
+			instance->adminSigHandler(signum);
+		}
+	}
+
+	void adminSigHandler(int signum) {
         // pid를 받으면 관리자 모드 진입을 위한 핸들러
         int password;
         if (signum == SIGUSR1) {
@@ -131,15 +139,20 @@ class Cinema {
     void reserveCheck() {}
 
   private:
+	static Cinema* instance;
+
     list<Movie> movieList;
     int movieNumber = 1;
 };
 
+Cinema* Cinema::instance;
+
 int main(int argc, char const *argv[]) {
     doWindowsStuff();
     Cinema c1;
-    if (signal(SIGUSR1, adminSigHandler) == SIG_ERR)
+    if (signal(SIGUSR1, Cinema::signalHandler) == SIG_ERR)
         perror("adminSigHandler() error!");
+
     while (1) {
         pause();
     }
