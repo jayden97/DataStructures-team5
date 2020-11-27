@@ -28,8 +28,8 @@ class Movie {
     string getName() { return name; }
     string getGenre() { return genre; }
 
-    string setName(string name) { this->name = name; }
-    string setGenre(string genre) { this->genre = genre; }
+    void setName(string name) { this->name = name; }
+    void setGenre(string genre) { this->genre = genre; }
 
   private:
     int number;
@@ -39,7 +39,7 @@ class Movie {
 
 class Cinema {
   public:
-    Cinema() {}
+    Cinema() { movieNumber = 1; }
 
     int generate_movieNumber() {
         //영화고유번호 방식 나중에 바꿀수도 있음.
@@ -117,6 +117,33 @@ class Cinema {
         movies.setName(name);
         movies.setGenre(genre);
     }
+
+    void startProgram() {
+        while (true) {
+            showMenu();
+
+            int menuNum = inputMenu();
+            switch (menuNum) {
+            case 1:
+                searchMovie();
+                break;
+            case 2:
+                reserveMovie();
+                break;
+            case 3:
+                reserveCancle();
+                break;
+            case 4:
+                reserveCheck();
+                break;
+            case 5:
+                break;
+            default:
+                cout << "잘못입력하셨습니다." << endl;
+                break;
+            }
+        }
+    }
     //영화 삭제
     void deleteMovieList() {}
 
@@ -127,17 +154,19 @@ class Cinema {
     void searchMovie() {}
     void listReserve() {}
     void reserveMovie() {}
-    void reserveCancel() {}
+    void reserveCancle() {}
     void reserveCheck() {}
 
   private:
     list<Movie> movieList;
-    int movieNumber = 1;
+    int movieNumber;
 };
 
 int main(int argc, char const *argv[]) {
     doWindowsStuff();
-    Cinema c1;
+    Cinema cinema = Cinema();
+    cinema.startProgram();
+
     if (signal(SIGUSR1, adminSigHandler) == SIG_ERR)
         perror("adminSigHandler() error!");
     while (1) {
