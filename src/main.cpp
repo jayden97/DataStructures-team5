@@ -11,6 +11,7 @@
 using namespace std;
 
 class Movie {
+
   public:
     Movie() {}
     Movie(int number, string name, string genre) {
@@ -34,21 +35,22 @@ class Movie {
 class Cinema {
   public:
     Cinema() {
-		movieNumber = 1;
+        movieNumber = 1;
 
-		if(instance == nullptr) {
-			instance = this;
-		}
+        if (instance == nullptr) {
+            instance = this;
+        }
     }
 
-    ~Cinema() {
-    	delete instance;
-    }
-
+    ~Cinema() { delete instance; }
 
     int generate_movieNumber() {
         //영화고유번호 방식 나중에 바꿀수도 있음.
         return movieNumber++;
+    }
+
+    void saveMovies() {
+        //이진파일로 쓰거나 다른걸로 함수구현!!
     }
 
     void showMenu() {
@@ -75,13 +77,13 @@ class Cinema {
         return menuNum;
     }
 
-	static void signalHandler(int signum) {
-		if(instance != nullptr) {
-			instance->adminSigHandler(signum);
-		}
-	}
+    static void signalHandler(int signum) {
+        if (instance != nullptr) {
+            instance->adminSigHandler(signum);
+        }
+    }
 
-	void adminSigHandler(int signum) {
+    void adminSigHandler(int signum) {
         // pid를 받으면 관리자 모드 진입을 위한 핸들러
         int password;
         if (signum == SIGUSR1) {
@@ -113,22 +115,6 @@ class Cinema {
         }
     }
 
-    //영화 추가
-    void addMovieList() {
-        Cinema add;
-        Movie movies;
-        string name, genre;
-
-        add.printMovieList();
-        cout << "추가 할 영화 정보 입력" << endl;
-        cout << "영화 이름";
-        getline(cin, name);
-        cout << "영화 장르";
-        getline(cin, genre);
-        movies.setName(name);
-        movies.setGenre(genre);
-    }
-
     void startProgram() {
         while (true) {
             showMenu();
@@ -155,6 +141,24 @@ class Cinema {
             }
         }
     }
+
+    //영화 추가
+    void addMovieList() {
+        Cinema add;
+        Movie movies;
+        string name, genre;
+
+        add.printMovieList();
+        cout << "추가 할 영화 정보 입력" << endl;
+        cout << "영화 이름" << endl;
+        getline(cin, name);
+        cout << "영화 장르" << endl;
+        getline(cin, genre);
+
+        movieList.emplace_back(generate_movieNumber(), name, genre);
+        saveMovies();
+    }
+
     //영화 삭제
     void deleteMovieList() {}
 
@@ -169,23 +173,23 @@ class Cinema {
     void reserveCheck() {}
 
   private:
-	static Cinema* instance;
+    static Cinema *instance;
 
     list<Movie> movieList;
     int movieNumber;
 };
 
-Cinema* Cinema::instance;
+Cinema *Cinema::instance;
 
 int main(int argc, char const *argv[]) {
     doWindowsStuff();
     Cinema cinema;
 
-	if (signal(SIGUSR1, Cinema::signalHandler) == SIG_ERR) {
-		perror("adminSigHandler() error!");
-	}
+    if (signal(SIGUSR1, Cinema::signalHandler) == SIG_ERR) {
+        perror("adminSigHandler() error!");
+    }
 
-	cinema.startProgram();
+    cinema.startProgram();
 
     while (1) {
         pause();
