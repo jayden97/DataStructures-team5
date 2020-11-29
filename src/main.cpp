@@ -1,12 +1,14 @@
 #include "windows_thing.h"
 #include <csignal>
 #include <cstdlib>
+#include <fcntl.h>
 #include <iostream>
 #include <list>
 #include <unistd.h>
 
 //관리자 모드 패스워드
 #define ADMIN_PASSWORD 1111
+#define MOVIE_FILE "./moviesFile.dat"
 
 using namespace std;
 
@@ -47,10 +49,6 @@ class Cinema {
     int generate_movieNumber() {
         //영화고유번호 방식 나중에 바꿀수도 있음.
         return movieNumber++;
-    }
-
-    void saveMovies() {
-        //이진파일로 쓰거나 다른걸로 함수구현!!
     }
 
     void showMenu() {
@@ -142,20 +140,40 @@ class Cinema {
         }
     }
 
+    void saveMovies() {
+        int fd = open(MOVIE_FILE, O_CREAT | O_APPEND | O_WRONLY, 0644);
+        if (fd == -1) {
+            perror("open() error!");
+            exit(-1);
+        }
+
+        list<Movie>::iterator iter;
+        for (iter = movieList.begin(); iter != movieList.end(); ++iter) {
+            if (write(fd, &(*iter), sizeof(Movie)) == -1) {
+                perror("write() error!");
+                exit(-2);
+            }
+        }
+        close(fd);
+    }
+
     //영화 추가
     void addMovieList() {
         Cinema add;
-        Movie movies;
+
         string name, genre;
 
         add.printMovieList();
         cout << "추가 할 영화 정보 입력" << endl;
         cout << "영화 이름" << endl;
-        getline(cin, name);
+        cin >> name;
         cout << "영화 장르" << endl;
-        getline(cin, genre);
+        cin >> genre;
 
-        movieList.emplace_back(generate_movieNumber(), name, genre);
+        Movie movies(generate_movieNumber(), name, genre);
+
+        movieList.push_back(movies);
+
         saveMovies();
     }
 
@@ -163,7 +181,31 @@ class Cinema {
     void deleteMovieList() {}
 
     //영화 목록을 출력
-    void printMovieList() {}
+    void printMovieList() {
+        int fd = open(MOVIE_FILE, O_RDONLY, 0644);
+        if (fd == -1) {
+            perror("open() error");
+            exit(-1);
+        }
+
+        int m_Number;
+        string name, genre;
+
+        Movie *movies;
+
+        ssize_t rsize = 0;
+
+        while (rsize = read(fd, (Movie *)movies, sizeof(Movie))) {
+            m_Number = movies->getNumber();
+            name = movies->getName();
+            genre = movies->getGenre();
+
+            cout << "MOVIE_NUMBER: " << m_Number << " NAME: " << name
+                 << " GENRE : " << genre << endl;
+        }
+
+        close(fd);
+    }
 
     //"영화검색,예약,취소,좌석확인" 성철,재현
     void searchMovie() {}
