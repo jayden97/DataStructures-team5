@@ -5,6 +5,7 @@
 #include <iostream>
 #include <list>
 #include <unistd.h>
+#include <array>
 
 //관리자 모드 패스워드
 #define ADMIN_PASSWORD 1111
@@ -39,7 +40,13 @@ public:
 	static const int ROW = 10;
 	static const int COLUMN = 20;
 
-	Theater(Movie* movie);
+	Theater(Movie* movie) {
+		this->movie = movie;
+
+		array<int, COLUMN> rows{};
+		rows.fill(0);
+		seat.fill(rows);
+	}
 
 	Movie* getMovie() const {
 		return this->movie;
@@ -62,7 +69,7 @@ public:
 	}
 
 private:
-	int seat[ROW][COLUMN];
+	array<array<int, COLUMN>, ROW> seat;
 	Movie* movie;
 };
 
