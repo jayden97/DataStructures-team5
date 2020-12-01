@@ -117,6 +117,7 @@ class Cinema {
         // pid를 받으면 관리자 모드 진입을 위한 핸들러
         int password;
         if (signum == SIGUSR1) {
+            cout << "관리자 모드 진입 중..." << endl;
             cout << "비밀번호 입력";
             cin >> password;
             if (ADMIN_PASSWORD == password)
@@ -201,9 +202,7 @@ class Cinema {
         cin >> name;
         cout << "영화 장르" << endl;
         cin >> genre;
-
         Movie movies(generate_movieNumber(), name, genre);
-
         movieList.push_back(movies);
 
         saveMovies();
