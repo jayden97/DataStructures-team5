@@ -34,6 +34,38 @@ class Movie {
     string genre;
 };
 
+class Theater {
+public:
+	static const int ROW = 10;
+	static const int COLUMN = 20;
+
+	Theater(Movie* movie);
+
+	Movie* getMovie() const {
+		return this->movie;
+	}
+
+	void setSeat(int row, int column) {
+		if(row >= ROW || column >= COLUMN) {
+			throw invalid_argument("invalid row & column");
+		}
+
+		this->seat[row][column] = 1; // TODO set user id here
+	}
+
+	int getSeat(int row, int column) {
+		if(row >= ROW || column >= COLUMN) {
+			throw invalid_argument("invalid row & column");
+		}
+
+		return this->seat[row][column];
+	}
+
+private:
+	int seat[ROW][COLUMN];
+	Movie* movie;
+};
+
 class Cinema {
   public:
     Cinema() {
