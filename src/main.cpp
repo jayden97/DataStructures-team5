@@ -5,6 +5,7 @@
 #include <iostream>
 #include <list>
 #include <unistd.h>
+#include <array>
 
 //관리자 모드 패스워드
 #define ADMIN_PASSWORD 1111
@@ -34,10 +35,53 @@ class Movie {
     string genre;
 };
 
+class Theater {
+public:
+	static const int ROW = 10;
+	static const int COLUMN = 20;
+
+	Theater(Movie* movie) {
+		this->movie = movie;
+
+		array<int, COLUMN> rows{};
+		rows.fill(0);
+		seat.fill(rows);
+	}
+
+	Movie* getMovie() const {
+		return this->movie;
+	}
+
+	void setSeat(int row, int column) {
+		if(row >= ROW || column >= COLUMN) {
+			throw invalid_argument("invalid row & column");
+		}
+
+		this->seat[row][column] = 1; // TODO set user id here
+	}
+
+	int getSeat(int row, int column) {
+		if(row >= ROW || column >= COLUMN) {
+			throw invalid_argument("invalid row & column");
+		}
+
+		return this->seat[row][column];
+	}
+
+private:
+	array<array<int, COLUMN>, ROW> seat;
+	Movie* movie;
+};
+
 class Cinema {
   public:
     Cinema() {
         movieNumber = 1;
+        readMovies();
+
+        for(auto& movie : movieList) {
+			theaterList.emplace_back(&movie);
+        }
 
         if (instance == nullptr) {
             instance = this;
@@ -85,6 +129,7 @@ class Cinema {
         // pid를 받으면 관리자 모드 진입을 위한 핸들러
         int password;
         if (signum == SIGUSR1) {
+            cout << "관리자 모드 진입 중..." << endl;
             cout << "비밀번호 입력";
             cin >> password;
             if (ADMIN_PASSWORD == password)
@@ -159,19 +204,15 @@ class Cinema {
 
     //영화 추가
     void addMovieList() {
-        Cinema add;
-
         string name, genre;
 
-        add.printMovieList();
+        printMovieList();
         cout << "추가 할 영화 정보 입력" << endl;
         cout << "영화 이름" << endl;
         cin >> name;
         cout << "영화 장르" << endl;
         cin >> genre;
-
         Movie movies(generate_movieNumber(), name, genre);
-
         movieList.push_back(movies);
 
         saveMovies();
@@ -180,9 +221,16 @@ class Cinema {
     //영화 삭제
     void deleteMovieList() {}
 
-    //영화 목록을 출력
     void printMovieList() {
-        int fd = open(MOVIE_FILE, O_RDONLY, 0644);
+    	for(auto& movie : movieList) {
+		    cout << "MOVIE_NUMBER: " << movie.getNumber() << " NAME: "
+		        << movie.getName() << " GENRE : " << movie.getGenre() << endl;
+    	}
+    }
+
+    //영화 목록을 출력
+    void readMovies() {
+        int fd = open(MOVIE_FILE, O_CREAT | O_RDONLY, 0644);
         if (fd == -1) {
             perror("open() error");
             exit(-1);
@@ -195,13 +243,12 @@ class Cinema {
 
         ssize_t rsize = 0;
 
-        while (rsize = read(fd, (Movie *)movies, sizeof(Movie))) {
+        while ((rsize = read(fd, (Movie *)movies, sizeof(Movie))) > 0) {
             m_Number = movies->getNumber();
             name = movies->getName();
             genre = movies->getGenre();
 
-            cout << "MOVIE_NUMBER: " << m_Number << " NAME: " << name
-                 << " GENRE : " << genre << endl;
+            movieList.emplace_back(m_Number, name, genre);
         }
 
         close(fd);
@@ -218,6 +265,7 @@ class Cinema {
     static Cinema *instance;
 
     list<Movie> movieList;
+    list<Theater> theaterList;
     int movieNumber;
 };
 
