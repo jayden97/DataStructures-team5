@@ -29,6 +29,36 @@ class Movie {
     void setName(string name) { this->name = name; }
     void setGenre(string genre) { this->genre = genre; }
 
+    void serialize(int fd) {
+    	write(fd, &number, sizeof(int));
+
+    	int length = name.length();
+    	write(fd, &length, sizeof(int));
+    	write(fd, name.c_str(), length);
+
+    	length = genre.length();
+    	write(fd, &length, sizeof(int));
+    	write(fd, genre.c_str(), length);
+    }
+
+    static void deserialize(int fd, string& name, string& genre) {
+    	char* buf;
+
+    	int length;
+    	read(fd, &length, sizeof(int));
+    	buf = new char[length];
+    	read(fd, buf, length);
+
+    	name = buf;
+    	delete[] buf;
+
+    	read(fd, &length, sizeof(int));
+    	buf = new char[length];
+    	read(fd, buf, length);
+    	genre = buf;
+    	delete[] buf;
+    }
+
   private:
     int number;
     string name;
@@ -186,7 +216,7 @@ class Cinema {
     }
 
     void saveMovies() {
-        int fd = open(MOVIE_FILE, O_CREAT | O_APPEND | O_WRONLY, 0644);
+        int fd = open(MOVIE_FILE, O_CREAT | O_WRONLY, 0644);
         if (fd == -1) {
             perror("open() error!");
             exit(-1);
@@ -194,11 +224,9 @@ class Cinema {
 
         list<Movie>::iterator iter;
         for (iter = movieList.begin(); iter != movieList.end(); ++iter) {
-            if (write(fd, &(*iter), sizeof(Movie)) == -1) {
-                perror("write() error!");
-                exit(-2);
-            }
+            iter->serialize(fd);
         }
+
         close(fd);
     }
 
@@ -236,19 +264,12 @@ class Cinema {
             exit(-1);
         }
 
-        int m_Number;
         string name, genre;
 
-        Movie *movies;
-
-        ssize_t rsize = 0;
-
-        while ((rsize = read(fd, (Movie *)movies, sizeof(Movie))) > 0) {
-            m_Number = movies->getNumber();
-            name = movies->getName();
-            genre = movies->getGenre();
-
-            movieList.emplace_back(m_Number, name, genre);
+        int number;
+        while (read(fd, &number, sizeof(int)) > 0) {
+            Movie::deserialize(fd, name, genre);
+            movieList.emplace_back(number, name, genre);
         }
 
         close(fd);
