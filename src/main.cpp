@@ -77,6 +77,11 @@ class Cinema {
   public:
     Cinema() {
         movieNumber = 1;
+        readMovies();
+
+        for(auto& movie : movieList) {
+			theaterList.emplace_back(&movie);
+        }
 
         if (instance == nullptr) {
             instance = this;
@@ -199,11 +204,9 @@ class Cinema {
 
     //영화 추가
     void addMovieList() {
-        Cinema add;
-
         string name, genre;
 
-        add.printMovieList();
+        printMovieList();
         cout << "추가 할 영화 정보 입력" << endl;
         cout << "영화 이름" << endl;
         cin >> name;
@@ -218,9 +221,16 @@ class Cinema {
     //영화 삭제
     void deleteMovieList() {}
 
-    //영화 목록을 출력
     void printMovieList() {
-        int fd = open(MOVIE_FILE, O_RDONLY, 0644);
+    	for(auto& movie : movieList) {
+		    cout << "MOVIE_NUMBER: " << movie.getNumber() << " NAME: "
+		        << movie.getName() << " GENRE : " << movie.getGenre() << endl;
+    	}
+    }
+
+    //영화 목록을 출력
+    void readMovies() {
+        int fd = open(MOVIE_FILE, O_CREAT | O_RDONLY, 0644);
         if (fd == -1) {
             perror("open() error");
             exit(-1);
@@ -233,13 +243,12 @@ class Cinema {
 
         ssize_t rsize = 0;
 
-        while (rsize = read(fd, (Movie *)movies, sizeof(Movie))) {
+        while ((rsize = read(fd, (Movie *)movies, sizeof(Movie))) > 0) {
             m_Number = movies->getNumber();
             name = movies->getName();
             genre = movies->getGenre();
 
-            cout << "MOVIE_NUMBER: " << m_Number << " NAME: " << name
-                 << " GENRE : " << genre << endl;
+            movieList.emplace_back(m_Number, name, genre);
         }
 
         close(fd);
@@ -256,6 +265,7 @@ class Cinema {
     static Cinema *instance;
 
     list<Movie> movieList;
+    list<Theater> theaterList;
     int movieNumber;
 };
 
