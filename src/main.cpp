@@ -221,6 +221,7 @@ class Cinema {
     int movieNumber;
 };
 
+// asldkfjlsdajflsdf
 Cinema *Cinema::instance;
 
 int main(int argc, char const *argv[]) {
