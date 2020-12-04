@@ -17,7 +17,7 @@ class Movie {
 
   public:
     Movie() {}
-    Movie(int number, string name, string genre, string theater) {
+    Movie(int number, string name, string genre, Theater* theater) {
         this->number = number;
         this->name = name;
         this->genre = genre;
@@ -26,7 +26,7 @@ class Movie {
     int getNumber() { return number; }
     string getName() { return name; }
     string getGenre() { return genre; }
-    string getTheater() {return theater;}
+    Theater* getTheater() {return theater;}
 
     void setName(string name) { this->name = name; }
     void setGenre(string genre) { this->genre = genre; }
@@ -35,7 +35,7 @@ class Movie {
     int number;
     string name;
     string genre;
-    string theater;
+    Theater* theater;
 };
 
 class Theater {
