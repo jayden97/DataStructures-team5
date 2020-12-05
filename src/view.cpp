@@ -169,3 +169,19 @@ void view::set_height(int new_height) {
 
 	this->refresh_layout();
 }
+
+void view::set_focusable(bool value) {
+	this->focusable = value;
+}
+
+bool view::is_focusable() const {
+	return this->focusable;
+}
+
+void view::set_focused(bool value) {
+	this->focused = value;
+}
+
+bool view::is_focused() const {
+	return this->focused;
+}

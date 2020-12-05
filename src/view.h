@@ -52,6 +52,11 @@ public:
 	bool has_parent() const;
 	view* get_parent() const;
 
+	void set_focusable(bool value = true);
+	bool is_focusable() const;
+	void set_focused(bool value = true);
+	bool is_focused() const;
+
 	virtual int get_type() const;
 
 	unsigned int status_flag = FLAG_INVALIDATE_LAYOUT | FLAG_INVALIDATED | FLAG_REDRAW_BACKGROUND;
@@ -67,6 +72,9 @@ protected:
 
 private:
 	int id;
+
+	bool focusable = false;
+	bool focused = false;
 
 	view* parent = nullptr;
 
