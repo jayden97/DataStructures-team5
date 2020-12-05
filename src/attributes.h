@@ -1,7 +1,7 @@
-#ifndef DSP_TEAM_PROJECT_ANSI_H
-#define DSP_TEAM_PROJECT_ANSI_H
+#ifndef DSP_TEAM_PROJECT_ATTRIBUTES_H
+#define DSP_TEAM_PROJECT_ATTRIBUTES_H
 
-class ansi {
+class attributes {
 public:
 	static const int BLACK = 30;
 	static const int RED = 31;
@@ -22,11 +22,10 @@ public:
 	static const int BACKGROUND_MAGENTA = 45;
 	static const int BACKGROUND_CYAN = 46;
 	static const int BACKGROUND_WHITE = 47;
-
-	static void move_cursor(int x, int y);
-	static void set_colors(int color, int background_color, bool brighten = false);
-	static bool validate_color(int color);
-	static bool validate_background_color(int background_color);
 };
 
-#endif //DSP_TEAM_PROJECT_ANSI_H
+enum arrow {
+	NONE, UP, DOWN, LEFT, RIGHT
+};
+
+#endif //DSP_TEAM_PROJECT_ATTRIBUTES_H
