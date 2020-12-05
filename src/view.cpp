@@ -131,6 +131,20 @@ drawable* view::get_background() const {
 	return this->background;
 }
 
+void view::set_click_listener(view::click_listener_t* listener) {
+	this->click_listener = listener;
+}
+
+view::click_listener_t* view::get_click_listener() const {
+	return this->click_listener;
+}
+
+void view::click() {
+	if(this->click_listener != nullptr) {
+		(*this->click_listener)(this);
+	}
+}
+
 void view::set_xy(int new_x, int new_y) {
 	this->x = new_x;
 	this->y = new_y;

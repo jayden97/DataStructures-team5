@@ -9,6 +9,8 @@
 
 class view {
 public:
+	typedef std::function<void(view*)> click_listener_t;
+
 	static const int FLAG_INVALIDATED = 1;
 	static const int FLAG_INVALIDATE_LAYOUT = 1 << 1;
 	static const int FLAG_REDRAW_BACKGROUND = 1 << 2;
@@ -52,6 +54,11 @@ public:
 	bool has_parent() const;
 	view* get_parent() const;
 
+	void set_click_listener(click_listener_t* listener);
+	click_listener_t* get_click_listener() const;
+
+	virtual void click();
+
 	void set_focusable(bool value = true);
 	bool is_focusable() const;
 	void set_focused(bool value = true);
@@ -80,6 +87,8 @@ private:
 
 	vector2 last_drawn;
 	vector2 last_size;
+
+	click_listener_t* click_listener = nullptr;
 };
 
 static int view_id = 0;
