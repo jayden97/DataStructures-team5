@@ -10,8 +10,13 @@ public:
 
 	void set_view(view* v);
 	void render() const;
+
+	void start_input();
+	void end_input();
 private:
 	root_layout* root;
+
+	bool wait_keyboard = false;
 };
 
 

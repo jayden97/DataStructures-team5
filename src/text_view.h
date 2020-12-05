@@ -1,7 +1,8 @@
 #ifndef DSP_TEAM_PROJECT_TEXT_VIEW_H
 #define DSP_TEAM_PROJECT_TEXT_VIEW_H
 
-#include "ansi.h"
+#include "attributes.h"
+#include "console.h"
 #include "view.h"
 
 class text_view: public view {
@@ -16,7 +17,7 @@ public:
 private:
 	std::string text;
 
-	int text_color = ansi::WHITE;
+	int text_color = attributes::WHITE;
 };
 
 

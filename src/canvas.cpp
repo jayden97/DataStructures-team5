@@ -1,13 +1,15 @@
-#include "ansi.h"
+#include "console.h"
 #include "canvas.h"
+#include "attributes.h"
+#include "platform_dependant.h"
 #include <algorithm>
 #include <iostream>
 #include <string>
 
 canvas::canvas(int translate_x, int translate_y, int width, int height, mask_filter mask)
 	: translate_x(translate_x), translate_y(translate_y), width(width), height(height),
-	is_background_bright(false), background_color(ansi::BACKGROUND_BLACK),
-	x(0), y(0), color(ansi::WHITE), mask(mask) {
+	  is_background_bright(false), background_color(attributes::BACKGROUND_BLACK),
+	  x(0), y(0), color(attributes::WHITE), mask(mask) {
 	// intentional empty code block
 }
 
@@ -32,17 +34,19 @@ void canvas::draw_text(std::string text) const {
 		size_t max_width = max(0, this->width - this->x);
 		std::string chunk = eat_chunk(text, max_width);
 
-		ansi::set_colors(this->color, this->background_color, this->is_background_bright);
+		console::set_colors(this->color, this->background_color, this->is_background_bright);
 
 		if(this->mask == nullptr) {
-			ansi::move_cursor(this->translate_x + this->x + 1, this->translate_y + current_y + 1);
-			std::cout << chunk;
+			console::move_cursor(this->translate_x + this->x + 1, this->translate_y + current_y + 1);
+			//std::cout << chunk;
+			screen_print_text(chunk.c_str());
 		}else{
 			int chunk_len = chunk.length();
 			for(int i = 0; i < chunk_len; ++i) {
 				if((*this->mask)(this->x + i, current_y)) {
-					ansi::move_cursor(this->translate_x + this->x + i + 1, this->translate_y + current_y + 1);
-					std::cout << chunk[i];
+					console::move_cursor(this->translate_x + this->x + i + 1, this->translate_y + current_y + 1);
+					//std::cout << chunk[i];
+					screen_print_text(&chunk[i]);
 				}
 			}
 		}
@@ -72,14 +76,14 @@ std::string canvas::eat_chunk(std::string& text, size_t max_width) {
 }
 
 void canvas::set_color(int new_color) {
-	if(!ansi::validate_color(new_color))
+	if(!console::validate_color(new_color))
 		throw std::invalid_argument("canvas: invalid color given");
 
 	this->color = new_color;
 }
 
 void canvas::set_background_color(int value) {
-	if(!ansi::validate_background_color(value))
+	if(!console::validate_background_color(value))
 		throw std::invalid_argument("canvas: invalid background color given");
 
 	this->background_color = value;
