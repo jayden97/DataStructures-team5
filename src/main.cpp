@@ -1,4 +1,4 @@
-#include "canvas.h"
+#include "button.h"
 #include "fill_drawable.h"
 #include "linear_layout.h"
 #include "text_view.h"
@@ -19,9 +19,10 @@ int main() {
 	layout->set_width(10);
 	layout->set_height(10);
 
-	auto* tv1 = new text_view("hello world\nasdf");
+	auto* tv1 = new button("hello world");
 	tv1->set_width(12);
 	tv1->set_height(3);
+	tv1->set_focused(true);
 	tv1->set_text_color(ansi::CYAN);
 	layout->add_child(tv1);
 

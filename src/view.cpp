@@ -201,5 +201,5 @@ void view::set_focused(bool value) {
 }
 
 bool view::is_focused() const {
-	return this->focused;
+	return this->focusable && this->focused;
 }
