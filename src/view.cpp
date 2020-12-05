@@ -179,7 +179,11 @@ bool view::is_focusable() const {
 }
 
 void view::set_focused(bool value) {
-	this->focused = value;
+	if(this->focused != value) {
+		this->focused = value;
+
+		this->invalidate();
+	}
 }
 
 bool view::is_focused() const {
