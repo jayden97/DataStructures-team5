@@ -7,7 +7,7 @@
 
 class fill_drawable: public drawable {
 public:
-	fill_drawable(int color = attributes::BACKGROUND_BLACK);
+	fill_drawable(int color = color::BACKGROUND_BLACK);
 
 	void draw(canvas& c) override;
 

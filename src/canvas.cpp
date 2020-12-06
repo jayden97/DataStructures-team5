@@ -8,8 +8,8 @@
 
 canvas::canvas(int translate_x, int translate_y, int width, int height, mask_filter mask)
 	: translate_x(translate_x), translate_y(translate_y), width(width), height(height),
-	  is_background_bright(false), background_color(attributes::BACKGROUND_BLACK),
-	  x(0), y(0), color(attributes::WHITE), mask(mask) {
+	  is_background_bright(false), background_color(color::BACKGROUND_BLACK),
+	  x(0), y(0), color(color::WHITE), mask(mask) {
 	// intentional empty code block
 }
 

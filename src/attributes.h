@@ -1,7 +1,7 @@
 #ifndef DSP_TEAM_PROJECT_ATTRIBUTES_H
 #define DSP_TEAM_PROJECT_ATTRIBUTES_H
 
-class attributes {
+class color {
 public:
 	static const int BLACK = 30;
 	static const int RED = 31;

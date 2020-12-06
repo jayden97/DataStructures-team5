@@ -15,20 +15,20 @@ void console::set_colors(int color, int background_color, bool brighten) {
 	if(!validate_background_color(background_color))
 		throw std::invalid_argument("invalid background color");
 
-	if(color == attributes::TRANSPARENT && background_color == attributes::TRANSPARENT)
+	if(color == color::TRANSPARENT && background_color == color::TRANSPARENT)
 		throw std::invalid_argument("at least one color must not be transparent");
 
 	std::stringstream str;
 	str << "\x1b[";
-	if(color != attributes::TRANSPARENT) {
+	if(color != color::TRANSPARENT) {
 		str << color;
 	}
 
-	if(color != attributes::TRANSPARENT && background_color != attributes::TRANSPARENT) {
+	if(color != color::TRANSPARENT && background_color != color::TRANSPARENT) {
 		str << ";";
 	}
 
-	if(background_color != attributes::TRANSPARENT) {
+	if(background_color != color::TRANSPARENT) {
 		str << background_color;
 	}
 

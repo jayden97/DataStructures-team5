@@ -26,9 +26,10 @@ int main() {
 
 	auto* layout = new linear_layout(VERTICAL, width, height);
 	layout->set_xy(0, 0);
-	layout->set_background(new fill_drawable(attributes::BACKGROUND_BLUE));
+	layout->set_background(new fill_drawable(color::BACKGROUND_BLUE));
 
 	auto* title = new linear_layout(HORIZONTAL, width, 1);
+	title->set_background(new fill_drawable(color::BACKGROUND_CYAN));
 	auto* title_text = new text_view("Frozen");
 	title_text->set_width(width - 1);
 	title_text->set_height(1);
@@ -41,14 +42,14 @@ int main() {
 		layout->add_child(margin_top);
 
 		auto* inner_layout = new linear_layout(HORIZONTAL, width, 1);
-		inner_layout->set_background(new fill_drawable(attributes::BACKGROUND_MAGENTA));
+		inner_layout->set_background(new fill_drawable(color::BACKGROUND_MAGENTA));
 
 		for(int column = 0; column < 10; column++) {
 			std::stringstream str;
 			str << '[' << row << ';' << column << ']';
 
 			auto* seat = new button(str.str());
-			seat->set_text_color(attributes::WHITE);
+			seat->set_text_color(color::WHITE);
 			seat->set_width(8);
 			seat->set_height(1);
 			inner_layout->add_child(seat);

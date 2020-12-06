@@ -2,8 +2,8 @@
 #include "fill_drawable.h"
 
 button::button(std::string text): text_view(std::move(text)) {
-	this->idle_background = new fill_drawable(attributes::BACKGROUND_BLACK);
-	this->hover_background = new fill_drawable(attributes::BACKGROUND_YELLOW);
+	this->idle_background = new fill_drawable(color::BACKGROUND_CYAN);
+	this->hover_background = new fill_drawable(color::BACKGROUND_YELLOW);
 
 	this->set_focusable(true);
 }

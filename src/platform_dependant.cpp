@@ -73,20 +73,20 @@ void set_cursor_color(int foreground, int background) {
 	if(!console::validate_background_color(background))
 		throw std::invalid_argument("invalid background color");
 
-	if(foreground == attributes::TRANSPARENT && background == attributes::TRANSPARENT)
+	if(foreground == color::TRANSPARENT && background == color::TRANSPARENT)
 		throw std::invalid_argument("at least one color must not be transparent");
 
 	std::stringstream str;
 	str << "\x1b[";
-	if(foreground != attributes::TRANSPARENT) {
+	if(foreground != color::TRANSPARENT) {
 		str << foreground;
 	}
 
-	if(foreground != attributes::TRANSPARENT && background != attributes::TRANSPARENT) {
+	if(foreground != color::TRANSPARENT && background != color::TRANSPARENT) {
 		str << ";";
 	}
 
-	if(foreground != attributes::TRANSPARENT) {
+	if(foreground != color::TRANSPARENT) {
 		str << background;
 	}
 

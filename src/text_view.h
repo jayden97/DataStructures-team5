@@ -19,7 +19,7 @@ public:
 private:
 	std::string text;
 
-	int text_color = attributes::WHITE;
+	int text_color = color::WHITE;
 };
 
 
