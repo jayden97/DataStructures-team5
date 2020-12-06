@@ -15,12 +15,8 @@ using namespace std;
 int main() {
 	init_screen();
 
-	ofstream os("log.txt");
-
 	int width, height;
 	get_width_height(width, height);
-	width -= 1;
-	height -= 1;
 
 	auto* w = new window(width, height);
 
@@ -72,8 +68,6 @@ int main() {
 	w->start_input();
 
 	delete w;
-
-	os.close();
 
 	return 0;
 }
