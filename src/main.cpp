@@ -47,7 +47,7 @@ int main() {
 			std::stringstream str;
 			str << '[' << row << ';' << column << ']';
 
-			auto* seat = new text_view(str.str());
+			auto* seat = new button(str.str());
 			seat->set_text_color(attributes::WHITE);
 			seat->set_width(8);
 			seat->set_height(1);

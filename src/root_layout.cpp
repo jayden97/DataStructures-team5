@@ -28,3 +28,11 @@ void root_layout::invalidate(const rect &r) {
 void root_layout::refresh_layout() {
 	// this->invalidate();
 }
+
+view* root_layout::get_view() const {
+	if(!this->children.empty()) {
+		return this->children[0];
+	}
+
+	return nullptr;
+}

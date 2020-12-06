@@ -8,6 +8,7 @@ public:
 	root_layout(int width, int height);
 
 	void add_child(view* child) override;
+	view* get_view() const;
 
 	void invalidate() override;
 	void invalidate(const rect& r) override;

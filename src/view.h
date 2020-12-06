@@ -2,6 +2,7 @@
 #define DSP_TEAM_PROJECT_VIEW_H
 
 #include <string>
+#include <vector>
 #include "canvas.h"
 #include "drawable.h"
 #include "vector2.h"
@@ -30,6 +31,9 @@ public:
 	virtual void invalidate(const rect& r, bool forward_parent);
 	virtual void refresh_layout();
 	virtual void refresh_layout(bool forward_parent);
+
+	virtual void add_child(view* v);
+	virtual std::vector<view*> get_children();
 
 	bool must_redraw() const;
 	void invoke_redraw(canvas& c);

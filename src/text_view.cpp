@@ -21,3 +21,7 @@ void text_view::set_text(std::string new_text) {
 
 	this->invalidate();
 }
+
+const std::string& text_view::get_text() const {
+	return this->text;
+}

@@ -121,7 +121,7 @@ drawable* view_group::get_top_background() const {
 	return ptr->get_background();
 }
 
-std::vector<view*> view_group::get_children() const {
+std::vector<view*> view_group::get_children() {
 	// this will not copy children view itself, only copies vector
 	return std::vector<view*>(this->children);
 }

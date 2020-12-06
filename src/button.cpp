@@ -17,9 +17,6 @@ void button::draw(canvas &c) {
 	canvas sub_canvas = c.sub_canvas(0, 0, c.get_width(), c.get_height());
 
 	if(this->is_focused()) {
-		char str[512];
-		sprintf(str, "canvas: %d %d\n", c.get_width(), c.get_height());
-		c.draw_text(str);
 		if(this->hover_background != nullptr) this->hover_background->draw(sub_canvas);
 	}else{
 		if(this->idle_background != nullptr) {
@@ -27,7 +24,7 @@ void button::draw(canvas &c) {
 		}
 	}
 
-	//c.draw_text("AAAAAAAAAAAAA");
-
-	text_view::draw(c);
+	c.set_color(this->is_focused() ? attributes::YELLOW : attributes::WHITE);
+	c.set_background_color(attributes::TRANSPARENT);
+	c.draw_text(text_view::get_text());
 }

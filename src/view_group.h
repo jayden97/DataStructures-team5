@@ -11,7 +11,7 @@ public:
 	view_group(int width, int height);
 	~view_group() override;
 
-	virtual void add_child(view* child);
+	virtual void add_child(view* child) override;
 	view* get_child(int id);
 	virtual void destroy_child(int id);
 
@@ -20,7 +20,7 @@ public:
 
 	void draw(canvas& c) override;
 
-	std::vector<view*> get_children() const;
+	std::vector<view*> get_children() override;
 
 	int get_type() const override;
 

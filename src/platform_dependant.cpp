@@ -204,6 +204,7 @@ void screen_print_text(const std::string& text) {
 	}*/
 
 	printw(text.c_str());
+	refresh();
 }
 
 arrow is_arrow_key(int c) {

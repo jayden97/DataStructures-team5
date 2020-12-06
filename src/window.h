@@ -16,6 +16,8 @@ public:
 private:
 	root_layout* root;
 
+	view* focused = nullptr;
+
 	bool wait_keyboard = false;
 };
 

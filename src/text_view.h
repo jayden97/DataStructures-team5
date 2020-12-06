@@ -12,6 +12,8 @@ public:
 	void set_text_color(int color);
 	void set_text(std::string new_text);
 
+	const std::string& get_text() const;
+
 	void draw(canvas& c) override;
 
 private:

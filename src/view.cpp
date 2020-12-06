@@ -145,6 +145,14 @@ void view::click() {
 	}
 }
 
+void view::add_child(view *v) {
+	throw std::invalid_argument("view cannot have child");
+}
+
+std::vector<view*> view::get_children() {
+	return std::vector<view*>();
+}
+
 void view::set_xy(int new_x, int new_y) {
 	this->x = new_x;
 	this->y = new_y;
