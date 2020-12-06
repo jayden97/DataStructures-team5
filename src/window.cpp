@@ -2,6 +2,8 @@
 #include "platform_dependant.h"
 #include "window.h"
 #include <stack>
+#include <cmath>
+#include <limits>
 
 window::window(int width, int height) {
 	this->root = new root_layout(width, height);
@@ -43,8 +45,7 @@ void window::start_input() {
 
 			view* new_focus = nullptr;
 
-			int min_xdiff = INT32_MAX;
-			int min_ydiff = INT32_MAX;
+			double min_diff = std::numeric_limits<double>::max();
 
 			std::stack<std::pair<view*, int>> s; // <target view, iterated children count>
 			s.push(std::pair<view*, int>(top, 0));
@@ -65,56 +66,38 @@ void window::start_input() {
 					vector2 point = child->get_absolute_point();
 					int child_x = point.get_x();
 					int child_y = point.get_y();
+
+					double distance = pow(child_x - focused_x, 2) + pow(child_y - focused_y, 2);
 					switch(a) {
 						case arrow::UP:
 							if(child_y < focused_y) {
-								if(min_ydiff > focused_y - child_y) {
-									min_ydiff = focused_y - child_y;
+								if(min_diff > distance) {
+									min_diff = distance;
 									new_focus = child;
-								}else if(min_ydiff == focused_y - child_y) {
-									if(min_xdiff > abs(focused_x - child_x)) {
-										min_xdiff = abs(focused_x - child_x);
-										new_focus = child;
-									}
 								}
 							}
 							break;
 						case arrow::DOWN:
 							if(child_y > focused_y) {
-								if(min_ydiff > child_y - focused_y) {
-									min_ydiff = child_y - focused_y;
+								if(min_diff > distance) {
+									min_diff = distance;
 									new_focus = child;
-								}else if(min_ydiff == child_y - focused_y) {
-									if(min_xdiff > abs(focused_x - child_x)) {
-										min_xdiff = abs(focused_x - child_x);
-										new_focus = child;
-									}
 								}
 							}
 							break;
 						case arrow::LEFT:
 							if(child_x < focused_x) {
-								if(min_xdiff > focused_x - child_x) {
-									min_xdiff = focused_x - child_x;
+								if(min_diff > distance) {
+									min_diff = distance;
 									new_focus = child;
-								}else if(min_xdiff == focused_x - child_x) {
-									if(min_ydiff > abs(focused_y - child_y)) {
-										min_ydiff = abs(focused_y - child_y);
-										new_focus = child;
-									}
 								}
 							}
 							break;
 						case arrow::RIGHT:
 							if(child_x > focused_x) {
-								if(min_xdiff > child_x - focused_x) {
-									min_xdiff = child_x - focused_x;
+								if(min_diff > distance) {
+									min_diff = distance;
 									new_focus = child;
-								}else if(min_xdiff == child_x - focused_x) {
-									if(min_ydiff > abs(focused_y - child_y)) {
-										min_ydiff = abs(focused_y - child_y);
-										new_focus = child;
-									}
 								}
 							}
 							break;
