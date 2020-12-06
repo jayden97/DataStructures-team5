@@ -58,8 +58,8 @@ public:
 	bool has_parent() const;
 	view* get_parent() const;
 
-	void set_click_listener(click_listener_t* listener);
-	click_listener_t* get_click_listener() const;
+	void set_click_listener(const click_listener_t&& listener);
+	const click_listener_t& get_click_listener() const;
 
 	virtual void click();
 
@@ -92,7 +92,7 @@ private:
 	vector2 last_drawn;
 	vector2 last_size;
 
-	click_listener_t* click_listener = nullptr;
+	click_listener_t click_listener;
 };
 
 static int view_id = 0;

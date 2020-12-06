@@ -114,6 +114,10 @@ void window::start_input() {
 				new_focus->set_focused(true);
 				this->focused = new_focus;
 			}
+		}else if(c == '\n') { // enter
+			if(this->focused != nullptr) {
+				this->focused->click();
+			}
 		}
 	}
 }

@@ -52,6 +52,11 @@ int main() {
 			seat->set_text_color(color::WHITE);
 			seat->set_width(8);
 			seat->set_height(1);
+
+			seat->set_click_listener([row, column] (view* v) {
+				std::cout << row << ", " << column << std::endl; // demo click listener
+			});
+
 			inner_layout->add_child(seat);
 		}
 
