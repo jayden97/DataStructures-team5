@@ -13,13 +13,14 @@ using namespace std;
 int main() {
 	init_screen();
 
-	auto* w = new window(10, 10);
+	int width, height;
+	get_width_height(width, height);
 
-	auto* layout = new linear_layout(VERTICAL, 10, 10);
+	auto* w = new window(width, height);
+
+	auto* layout = new linear_layout(VERTICAL, width, height);
 	layout->set_xy(0, 0);
 	layout->set_background(new fill_drawable(attributes::BACKGROUND_BLUE));
-	layout->set_width(10);
-	layout->set_height(10);
 
 	auto* tv1 = new button("a");
 	tv1->set_width(12);

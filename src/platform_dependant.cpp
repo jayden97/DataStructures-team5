@@ -15,12 +15,22 @@ void init_screen() {
 	SetConsoleMode(handle, dwMode);
 }
 
+void close() {
+
+}
+
 int get_char() {
 	return _getch();
 }
 
 void close() {
 
+}
+
+void get_width_height(int& x, int& y) {
+	CONSOLE_SCREEN_BUFFER_INFO GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    x = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    y = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 }
 
 #else
@@ -175,9 +185,9 @@ void set_cursor_color(int foreground, int background) {
 }
 
 void screen_print_text(const std::string& text) {
-	for(auto& pchar : text) {
-		int x, y;
-		getyx(window, y, x);
+	/*for(const char& pchar : text) {
+		/*int x, y;
+		getyx(curscr, y, x);
 
 		short pair = mvinch(y, x) & A_COLOR;
 		if(current_bg == -1) {
@@ -187,11 +197,13 @@ void screen_print_text(const std::string& text) {
 			refresh();
 		}else{
 			table[x][y] = find_background_color(pair);
-		}
+		}*
 
-		mvprintw(y, x, &pchar);
+		printw(&pchar);
 		refresh();
-	}
+	}*/
+
+	printw(text.c_str());
 }
 
 arrow is_arrow_key(int c) {
@@ -202,6 +214,10 @@ arrow is_arrow_key(int c) {
 		case KEY_RIGHT: return arrow::RIGHT;
 		default: return arrow::NONE;
 	}
+}
+
+void get_width_height(int& x, int& y) {
+	getmaxyx(curscr, y, x);
 }
 
 #endif

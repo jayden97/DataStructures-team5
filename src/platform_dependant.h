@@ -27,4 +27,6 @@ void screen_print_text(const std::string& text);
 
 arrow is_arrow_key(int c);
 
+void get_width_height(int& x, int& y);
+
 #endif //DSP_TEAM_PROJECT_PLATFORM_DEPENDANT_H
