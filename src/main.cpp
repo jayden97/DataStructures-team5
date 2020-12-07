@@ -1,4 +1,3 @@
-#include "windows_thing.h"
 #include <array>
 #include <csignal>
 #include <cstdlib>
@@ -7,13 +6,13 @@
 #include <list>
 #include <string>
 #include <unistd.h>
+#include "platform_dependant.h"
 
 //관리자 모드 패스워드
 #define ADMIN_PASSWORD 1111
 #define MOVIE_FILE "./moviesFile.dat"
 
 using namespace std;
-
 class Movie {
 
   public:
@@ -508,7 +507,8 @@ class Cinema {
 Cinema *Cinema::instance;
 
 int main(int argc, char const *argv[]) {
-    doWindowsStuff();
+	init_screen();
+
     Cinema cinema;
 
     if (signal(SIGUSR1, Cinema::signalHandler) == SIG_ERR) {
