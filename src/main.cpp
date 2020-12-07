@@ -17,7 +17,7 @@ class Movie {
 
   public:
     Movie() {}
-    Movie(int number, string name, string genre, Theater* theater) {
+    Movie(int number, string name, string genre, Theater *theater) {
         this->number = number;
         this->name = name;
         this->genre = genre;
@@ -29,7 +29,7 @@ class Movie {
     string getName() { return name; }
 
     string getGenre() { return genre; }
-    Theater* getTheater() {return theater;}
+    Theater *getTheater() { return theater; }
 
     void setName(string name) { this->name = name; }
 
@@ -69,7 +69,7 @@ class Movie {
     int number;
     string name;
     string genre;
-    Theater* theater;
+    Theater *theater;
 };
 
 class Theater {
@@ -210,6 +210,7 @@ class Cinema {
                 reserveCancel();
                 break;
             case 4:
+
                 listReserve();
                 break;
             case 5:
@@ -248,7 +249,7 @@ class Cinema {
         cout << "영화 장르" << endl;
         cin >> genre;
 
-        Movie movies(generate_movieNumber(), name, genre,theater);
+        Movie movies(generate_movieNumber(), name, genre, theater);
         movieList.push_back(movies);
 
         saveMovies();
@@ -330,17 +331,13 @@ class Cinema {
         cout << " 2.이름으로 검색하기" << endl;
         cout << " 3.장르로 검색하기" << endl;
 
-
-            int N;
-            cout << " 원하시는 방법을 숫자로 입력하세요(1~3) : " << endl;
-            cin >> N;
-
-
-
+        int N;
+        cout << " 원하시는 방법을 숫자로 입력하세요(1~3) : " << endl;
+        cin >> N;
 
         switch (N) {
         case 1:
-            readMovies();
+            printMovieList();
             break;
         case 2:
             searchbyName();
@@ -355,42 +352,57 @@ class Cinema {
         }
     }
 
-
-
-
     // compare [temp]
-    void listReserve(int temp) {
+    void listReserve() {
         int temp;
-        cout << "에약 조회 및 좌석확인 " << endl;
+        cout << "예약 조회" << endl;
+        cout << "원하시는 영화의 번호를 입력해주세요: " << endl;
+        printMovieList();
 
+        if (cin >> temp) {
 
-        if(temp == -1)
-        {
-            cout << "원하시는 영화의 번호를 입력해주세요: " << endl;
-            readMovies();
-            cin >> temp;
-        }
-        else
-        {
-            temp = temp;
+        } else {
+            cout << "입력 실패하셨습니다." << endl;
+            return;
         }
 
         list<Movie>::iterator reservation;
-        for(reservation = movieList.begin(); reservation != movieList.end(); ++reservation)
-        {
-            if(reservation -> getNumber() == temp)
-            {
-                Theater* theater = reservation -> getTheater(); //wherㄷ
-                for (int i = 0; i < 10;i++){
-                    for (int j = 0; j < 20;j++)
+        for (reservation = movieList.begin(); reservation != movieList.end();
+             ++reservation) {
+            if (reservation->getNumber() == temp) {
+                Theater *theater = reservation->getTheater(); // wherㄷ
+                for (int i = 0; i < 10; i++)
+                    for (int j = 0; j < 20; j++)
 
-                        if((*theater).getSeat(i,j)==1)
-                            cout << "좌석[" << i << "][" << j << "]" << endl; // i want print seat!
-                }
-                break;
+                        if ((*theater).getSeat(i, j) == 1)
+                            cout << "좌석[" << i << "][" << j << "]"
+                                 << "자리에 예약되어있습니다."
+                                 << endl; /// i want print seat!
             }
+            break;
         }
+    }
 
+    // 남는 좌석 표시 함수
+    void seat(int t) {
+        int temp;
+        temp = t;
+        list<Movie>::iterator reservation;
+        for (reservation = movieList.begin(); reservation != movieList.end();
+             ++reservation) {
+            if (reservation->getNumber() == temp) {
+                Theater *theater = reservation->getTheater(); // wherㄷ
+                for (int i = 0; i < 10; i++)
+                    for (int j = 0; j < 20; j++)
+
+                        if ((*theater).getSeat(i, j) == 0)
+                            cout << "좌석[" << i << "][" << j << "]"
+                                 << endl; /// i want print seat!
+                cout << "이 비어있습니다." << endl;
+            }
+            break;
+        }
+    }
 
     void reserveMovie() {
         int temp;
@@ -398,59 +410,51 @@ class Cinema {
         cout << "영화 예약 메뉴입니다." << endl;
         cout << "원하시는 영화의 번호를 입력해주세요." << endl;
         cin >> temp;
-        listReserve(temp);
-        cout << "Enter the seat number you want(row, column)" << endl;
+        seat(temp); //좌석 표시 함수
+        cout << "원하시는 좌석 번호를 입력해주세요(행, 렬): " << endl;
         cin >> row >> column;
 
         list<Movie>::iterator Rmovie;
 
-        for(Rmovie = movieList.begin(); Rmovie !=movieList.end(); ++Rmovie)
-        {
-            //fail
-            if(Rmovie -> getNumber() == temp)
-            {
-                Theater* theater = Rmovie -> getTheater();
+        for (Rmovie = movieList.begin(); Rmovie != movieList.end(); ++Rmovie) {
+            // fail
+            if (Rmovie->getNumber() == temp) {
+                Theater *theater = Rmovie->getTheater();
 
-                if((*theater).getSeat(row,column) == 1)
-                {
-                    cout << "Already reserved" << endl;
+                if ((*theater).getSeat(row, column) == 1) {
+                    cout << "이미 예약되었습니다" << endl;
                 }
 
                 (*theater).setSeat(row, column);
-                cout << "Thank you for reservation" << endl;
-
+                cout << "예약해주셔서 고맙습니다." << endl;
             }
-
         }
-
     }
     void reserveCancel() {
         int temp;
         int row, column;
 
-        cout << "Cancle Reservation" << endl;
+        cout << "예약 취소" << endl;
 
-        cout << "Enter the movie number" << endl;
+        cout << "영화 번호를 입력하세요: " << endl;
         cin >> temp;
-        listReserve(temp);
+        seat(temp);
 
-        cout << "Enter the seat number" << endl;
+        cout << "좌석번호를 입력해주세요: (행,렬)" << endl;
         cin >> row >> column;
 
         list<Movie>::iterator Cmovie;
-        for(Cmovie = movieList.begin(); Cmovie !=movieList.end(); ++Cmovie)
-        {
-            if(Cmovie -> getNumber() == temp)
-            {
-                Theater* theater = Cmovie ->getTheater();
+        for (Cmovie = movieList.begin(); Cmovie != movieList.end(); ++Cmovie) {
+            if (Cmovie->getNumber() == temp) {
+                Theater *theater = Cmovie->getTheater();
 
-                if((*theater).getSeat(row, column) == -1)
-                {
-                    cout << "it's not reserved seat, plz check agian" << endl;
+                if ((*theater).getSeat(row, column) == -1) {
+                    cout << "예약되어지지 않은 자리입니다. 다시 체크해주세요"
+                         << endl;
                 }
 
-                (*theater).setSeat(row,column);
-                cout << "Reservation cancled" << endl;
+                (*theater).setSeat(row, column);
+                cout << "예약이 취소되었습니다." << endl;
                 break;
             }
         }
