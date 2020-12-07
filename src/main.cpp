@@ -125,7 +125,6 @@ class Cinema {
     ~Cinema() { delete instance; }
 
     int generate_movieNumber() {
-
         int max = 0;
         list<Movie>::iterator iter;
 
@@ -166,7 +165,6 @@ class Cinema {
             cin.clear();
             cin.ignore(1000, '\n');
         }
-
         return menuNum;
     }
 
@@ -236,7 +234,7 @@ class Cinema {
                 reserveCancel();
                 break;
             case 4:
-                reserveCheck();
+                listReserve();
                 break;
             case 5:
                 break;
@@ -304,7 +302,6 @@ class Cinema {
 
     //영화 목록을 출력
     void readMovies() {
-
         int fd = open(MOVIE_FILE, O_CREAT | O_RDONLY, 0644);
         if (fd == -1) {
             perror("open() error");
@@ -323,16 +320,181 @@ class Cinema {
         close(fd);
     }
 
+    //이름으로 검색
+    void searchbyName() {
+        string name;
+        cout << "제목을 입력하세요: " << endl;
+        cin >> name;
+
+        list<Movie>::iterator iter;
+        int count = 0;
+        for (iter = movieList.begin(); iter != movieList.end(); ++iter) {
+            if (iter->getName() == name) {
+                cout << iter->getNumber() << iter->getName() << iter->getGenre()
+                     << endl;
+                count++;
+            }
+        }
+        if (count == 0)
+            cout << "영화제목 " << name << "을 찾을 수 없습니다." << endl;
+        cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
+    }
+    //장르로 검색
+    void searchbyGenre() {
+        string genre;
+        cout << "원하시는 장르를 입력하세요: " << endl;
+        cin >> genre;
+
+        list<Movie>::iterator iter;
+        int count = 0;
+        for (iter = movieList.begin(); iter != movieList.end(); ++iter) {
+            if (iter->getGenre() == genre) {
+                cout << iter->getNumber() << iter->getName() << iter->getGenre()
+                     << endl;
+                count++;
+            }
+        }
+        if (count == 0)
+            cout << genre << " 장르의 영화를 찾을 수 없습니다." << endl;
+        cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
+    }
+
     //"영화검색,예약,취소,좌석확인" 성철,재현
-    void searchMovie() {}
+    void searchMovie() {
+        cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ" << endl;
+        cout << "영화 검색 창입니다" << endl;
+        cout << " 1.전체 영화 목록 보기" << endl;
+        cout << " 2.이름으로 검색하기" << endl;
+        cout << " 3.장르로 검색하기" << endl;
 
-    void listReserve() {}
+        int N;
+        cout << " 원하시는 방법을 숫자로 입력하세요(1~3) : " << endl;
+        cin >> N;
 
-    void reserveMovie() {}
+        switch (N) {
+        case 1:
+            printMovieList();
+            break;
+        case 2:
+            searchbyName();
+            break;
+        case 3:
+            searchbyGenre();
+            break;
 
-    void reserveCancel() {}
+        default:
+            cout << "잘못입력하셨습니다." << endl;
+            break;
+        }
+    }
 
-    void reserveCheck() {}
+    // compare [temp]
+    void listReserve() {
+        int temp;
+        cout << "예약 조회" << endl;
+        cout << "원하시는 영화의 번호를 입력해주세요: " << endl;
+        printMovieList();
+
+        if (cin >> temp) {
+
+        } else {
+            cout << "입력 실패하셨습니다." << endl;
+            return;
+        }
+
+        list<Movie>::iterator reservation;
+        for (reservation = movieList.begin(); reservation != movieList.end();
+             ++reservation) {
+            if (reservation->getNumber() == temp) {
+                Theater *theater = reservation->getTheater(); // wherㄷ
+                for (int i = 0; i < 10; i++)
+                    for (int j = 0; j < 20; j++)
+
+                        if ((*theater).getSeat(i, j) == 1)
+                            cout << "좌석[" << i << "][" << j << "]"
+                                 << "자리에 예약되어있습니다."
+                                 << endl; /// i want print seat!
+            }
+            break;
+        }
+    }
+
+    // 남는 좌석 표시 함수
+    void seat(int t) {
+        int temp;
+        temp = t;
+        list<Movie>::iterator reservation;
+        for (reservation = movieList.begin(); reservation != movieList.end();
+             ++reservation) {
+            if (reservation->getNumber() == temp) {
+                Theater *theater = reservation->getTheater(); // wherㄷ
+                for (int i = 0; i < 10; i++)
+                    for (int j = 0; j < 20; j++)
+
+                        if ((*theater).getSeat(i, j) == 0)
+                            cout << "좌석[" << i << "][" << j << "]"
+                                 << endl; /// i want print seat!
+                cout << "이 비어있습니다." << endl;
+            }
+            break;
+        }
+    }
+
+    void reserveMovie() {
+        int temp;
+        int row, column;
+        cout << "영화 예약 메뉴입니다." << endl;
+        cout << "원하시는 영화의 번호를 입력해주세요." << endl;
+        cin >> temp;
+        seat(temp); //좌석 표시 함수
+        cout << "원하시는 좌석 번호를 입력해주세요(행, 렬): " << endl;
+        cin >> row >> column;
+
+        list<Movie>::iterator Rmovie;
+
+        for (Rmovie = movieList.begin(); Rmovie != movieList.end(); ++Rmovie) {
+            // fail
+            if (Rmovie->getNumber() == temp) {
+                Theater *theater = Rmovie->getTheater();
+
+                if ((*theater).getSeat(row, column) == 1) {
+                    cout << "이미 예약되었습니다" << endl;
+                }
+
+                (*theater).setSeat(row, column);
+                cout << "예약해주셔서 고맙습니다." << endl;
+            }
+        }
+    }
+    void reserveCancel() {
+        int temp;
+        int row, column;
+
+        cout << "예약 취소" << endl;
+
+        cout << "영화 번호를 입력하세요: " << endl;
+        cin >> temp;
+        seat(temp);
+
+        cout << "좌석번호를 입력해주세요: (행,렬)" << endl;
+        cin >> row >> column;
+
+        list<Movie>::iterator Cmovie;
+        for (Cmovie = movieList.begin(); Cmovie != movieList.end(); ++Cmovie) {
+            if (Cmovie->getNumber() == temp) {
+                Theater *theater = Cmovie->getTheater();
+
+                if ((*theater).getSeat(row, column) == -1) {
+                    cout << "예약되어지지 않은 자리입니다. 다시 체크해주세요"
+                         << endl;
+                }
+
+                (*theater).setSeat(row, column);
+                cout << "예약이 취소되었습니다." << endl;
+                break;
+            }
+        }
+    }
 
   private:
     static Cinema *instance;
