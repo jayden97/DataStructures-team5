@@ -1,3 +1,4 @@
+#include "platform_dependant.h"
 #include <array>
 #include <csignal>
 #include <cstdlib>
@@ -6,7 +7,6 @@
 #include <list>
 #include <string>
 #include <unistd.h>
-#include "platform_dependant.h"
 
 //관리자 모드 패스워드
 #define ADMIN_PASSWORD 1111
@@ -401,15 +401,15 @@ class Cinema {
             return;
         }
 
-        list<Movie>::iterator reservation;
-        for (reservation = movieList.begin(); reservation != movieList.end();
-             ++reservation) {
-            if (reservation->getNumber() == temp) {
-                Theater *theater = reservation->getTheater(); // wherㄷ
+        list<Theater>::iterator reservation;
+        for (reservation = theaterList.begin();
+             reservation != theaterList.end(); ++reservation) {
+            if (reservation->getMovie()->getNumber() == temp) {
+                // wherㄷ
                 for (int i = 0; i < 10; i++)
                     for (int j = 0; j < 20; j++)
 
-                        if ((*theater).getSeat(i, j) == 1)
+                        if (reservation->getSeat(i, j) == 1)
                             cout << "좌석[" << i << "][" << j << "]"
                                  << "자리에 예약되어있습니다."
                                  << endl; /// i want print seat!
@@ -422,15 +422,15 @@ class Cinema {
     void seat(int t) {
         int temp;
         temp = t;
-        list<Movie>::iterator reservation;
-        for (reservation = movieList.begin(); reservation != movieList.end();
-             ++reservation) {
-            if (reservation->getNumber() == temp) {
-                Theater *theater = reservation->getTheater(); // wherㄷ
+        list<Theater>::iterator reservation;
+        for (reservation = theaterList.begin();
+             reservation != theaterList.end(); ++reservation) {
+            if (reservation->getMovie()->getNumber() == temp) {
+                // wherㄷ
                 for (int i = 0; i < 10; i++)
                     for (int j = 0; j < 20; j++)
 
-                        if ((*theater).getSeat(i, j) == 0)
+                        if (reservation->getSeat(i, j) == 0)
                             cout << "좌석[" << i << "][" << j << "]"
                                  << endl; /// i want print seat!
                 cout << "이 비어있습니다." << endl;
@@ -449,18 +449,18 @@ class Cinema {
         cout << "원하시는 좌석 번호를 입력해주세요(행, 렬): " << endl;
         cin >> row >> column;
 
-        list<Movie>::iterator Rmovie;
+        list<Theater>::iterator Rmovie;
 
-        for (Rmovie = movieList.begin(); Rmovie != movieList.end(); ++Rmovie) {
+        for (Rmovie = theaterList.begin(); Rmovie != theaterList.end();
+             ++Rmovie) {
             // fail
-            if (Rmovie->getNumber() == temp) {
-                Theater *theater = Rmovie->getTheater();
+            if (Rmovie->getMovie()->getNumber() == temp) {
 
-                if ((*theater).getSeat(row, column) == 1) {
+                if (Rmovie->getSeat(row, column) == 1) {
                     cout << "이미 예약되었습니다" << endl;
                 }
 
-                (*theater).setSeat(row, column);
+                Rmovie->setSeat(row, column);
                 cout << "예약해주셔서 고맙습니다." << endl;
             }
         }
@@ -478,17 +478,17 @@ class Cinema {
         cout << "좌석번호를 입력해주세요: (행,렬)" << endl;
         cin >> row >> column;
 
-        list<Movie>::iterator Cmovie;
-        for (Cmovie = movieList.begin(); Cmovie != movieList.end(); ++Cmovie) {
-            if (Cmovie->getNumber() == temp) {
-                Theater *theater = Cmovie->getTheater();
+        list<Theater>::iterator Cmovie;
+        for (Cmovie = theaterList.begin(); Cmovie != theaterList.end();
+             ++Cmovie) {
+            if (Cmovie->getMovie()->getNumber() == temp) {
 
-                if ((*theater).getSeat(row, column) == -1) {
+                if (Cmovie->getSeat(row, column) == -1) {
                     cout << "예약되어지지 않은 자리입니다. 다시 체크해주세요"
                          << endl;
                 }
 
-                (*theater).setSeat(row, column);
+                Cmovie->setSeat(row, column);
                 cout << "예약이 취소되었습니다." << endl;
                 break;
             }
@@ -507,7 +507,7 @@ class Cinema {
 Cinema *Cinema::instance;
 
 int main(int argc, char const *argv[]) {
-	init_screen();
+    init_screen();
 
     Cinema cinema;
 
