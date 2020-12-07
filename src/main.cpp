@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <iostream>
 #include <list>
+#include <string>
 #include <unistd.h>
 
 //관리자 모드 패스워드
@@ -124,31 +125,48 @@ class Cinema {
     ~Cinema() { delete instance; }
 
     int generate_movieNumber() {
-        //영화고유번호 방식 나중에 바꿀수도 있음.
-        return movieNumber++;
+
+        int max = 0;
+        list<Movie>::iterator iter;
+
+        for (iter = movieList.begin(); iter != movieList.end(); ++iter) {
+            if (max < iter->getNumber())
+                max = iter->getNumber();
+        }
+        return ++max;
     }
 
     void showMenu() {
         //좌석확인은 추가가능하면 추가할 기능이기에 일단 넣어놨음. 무시하고
         //코드짜면 됨.
-        cout << "1. 영화검색" << endl;
-        cout << "2. 예약" << endl;
-        cout << "3. 에약취소" << endl;
-        cout << "4. 예약조회 및 좌석확인" << endl;
-        cout << "5. 종료" << endl;
+        cout << "========================================" << endl;
+        cout << "[1]    영화검색" << endl;
+        cout << "[2]    예약" << endl;
+        cout << "[3]    에약취소" << endl;
+        cout << "[4]    예약조회 및 좌석확인" << endl;
+        cout << "[5]    종료" << endl;
+        cout << "========================================" << endl;
     }
 
     void showAdminMenu() {
-        cout << "관리자 모드" << endl;
-        cout << "1. 영화 추가" << endl;
-        cout << "2. 영화 삭제" << endl;
-        cout << "3. 메인 으로" << endl;
+        cout << "==============================" << endl;
+        cout << "|          관리자 모드       | " << endl;
+        cout << "==============================" << endl;
+        cout << "[1]    영화 추가" << endl;
+        cout << "[2]    영화 삭제" << endl;
+        cout << "[3]    메인 으로" << endl;
     }
 
     int inputMenu() {
         int menuNum;
-        cout << "입력 : " << endl;
+        cout << "[입력] : " << endl;
         cin >> menuNum;
+        if (cin.fail()) {
+            cout << "숫자만 입력해 주세요!" << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+        }
+
         return menuNum;
     }
 
@@ -160,50 +178,54 @@ class Cinema {
 
     void adminSigHandler(int signum) {
         // pid를 받으면 관리자 모드 진입을 위한 핸들러
-        int password;
+        string password = "";
+
         if (signum == SIGUSR1) {
             cout << "관리자 모드 진입 중..." << endl;
-            cout << "비밀번호 입력";
-            cin >> password;
-            if (ADMIN_PASSWORD == password)
-                adminMode();
-            else {
-                cout << "비밀번호가 틀립니다." << endl;
-                return;
+            while (true) {
+                int status = 0;
+                cout << "비밀번호를 입력하세요  <<";
+                cin >> password;
+                if (ADMIN_PASSWORD == stoi(password))
+                    status = adminMode();
+                else
+                    cout << "비밀번호가 틀립니다." << endl;
+
+                if (status == 1) {
+                    return;
+                }
             }
         }
     }
 
     //관리자 모드 함수
-    void adminMode() {
+    int adminMode() {
         bool q = true;
         while (q) {
             showAdminMenu();
             switch (inputMenu()) {
             case 1:
-                addMovieList(); //프로그램이 다시 시작될때 1번부터 다시시작되는
-                                //부분은 어떻게 할지??고유번호말고 지우는 방식을
-                                //다시 생각하는건 어떤지?
+                addMovieList();
                 break;
             case 2:
                 deleteMovieList();
                 break;
             case 3:
-                return; //바로 자식프로세스를 죽이고 메인화면으로 넘어가는걸
-                        //모르겠음ㅠ
+                return 1; //바로 자식프로세스를 죽이고 메인화면으로 넘어가는걸
+                          //모르겠음ㅠ
             default:
-                cout << "잘못입력하셨습니다."
-                     << endl; //잘못입력하면 무한루프도는거 해결해야됨....
+                cout << "잘못입력하셨습니다." << endl;
             }
         }
     }
 
     void startProgram() {
+        cout << "========================================" << endl;
+        cout << getpid() << "극장에 오신걸 환영합니다." << endl;
         while (true) {
             showMenu();
 
-            int menuNum = inputMenu();
-            switch (menuNum) {
+            switch (int menuNum = inputMenu()) {
             case 1:
                 searchMovie();
                 break;
@@ -219,7 +241,7 @@ class Cinema {
             case 5:
                 break;
             default:
-                cout << "잘못입력하셨습니다." << endl;
+                cout << "잘못입력하셨습니다. 다시 입력해 주세요!" << endl;
                 break;
             }
         }
@@ -245,10 +267,10 @@ class Cinema {
         string name, genre;
 
         printMovieList();
-        cout << "추가 할 영화 정보 입력" << endl;
-        cout << "영화 이름" << endl;
+        cout << ">>>추가 할 영화 정보 입력<<<" << endl;
+        cout << "영화 이름 입력 <<" << endl;
         cin >> name;
-        cout << "영화 장르" << endl;
+        cout << "영화 장르 입력 <<" << endl;
         cin >> genre;
         Movie movies(generate_movieNumber(), name, genre);
         movieList.push_back(movies);
@@ -259,7 +281,7 @@ class Cinema {
 
     //영화 삭제
     void deleteMovieList() {
-        cout << "지우실 고유 영화 번호를 입력하세요" << endl;
+        cout << ">>>삭제 할 고유 영화 번호 입력<<<" << endl;
         printMovieList();
         int n = inputMenu();
 
