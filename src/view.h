@@ -29,8 +29,8 @@ public:
 	virtual void invalidate(const rect& r);
 	virtual void invalidate(bool forward_parent);
 	virtual void invalidate(const rect& r, bool forward_parent);
-	virtual void refresh_layout();
-	virtual void refresh_layout(bool forward_parent);
+	virtual void request_layout();
+	virtual void request_layout(bool forward_parent);
 
 	virtual void add_child(view* v);
 	virtual std::vector<view*> get_children();

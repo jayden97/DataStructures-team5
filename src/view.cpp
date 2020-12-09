@@ -82,11 +82,11 @@ void view::invalidate(const rect &r, bool forward_parent) {
 	}
 }
 
-void view::refresh_layout() {
-	this->refresh_layout(true);
+void view::request_layout() {
+	this->request_layout(true);
 }
 
-void view::refresh_layout(bool forward_parent) {
+void view::request_layout(bool forward_parent) {
 	this->status_flag |= FLAG_INVALIDATE_LAYOUT;
 
 	this->invalidate(rect(
@@ -157,7 +157,7 @@ void view::set_xy(int new_x, int new_y) {
 	this->x = new_x;
 	this->y = new_y;
 
-	this->refresh_layout();
+	this->request_layout();
 }
 
 int view::get_x() const {
@@ -183,13 +183,13 @@ int view::get_type() const {
 void view::set_width(int new_width) {
 	this->width = new_width;
 
-	this->refresh_layout();
+	this->request_layout();
 }
 
 void view::set_height(int new_height) {
 	this->height = new_height;
 
-	this->refresh_layout();
+	this->request_layout();
 }
 
 void view::set_focusable(bool value) {

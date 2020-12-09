@@ -13,7 +13,7 @@ public:
 	void invalidate() override;
 	void invalidate(const rect& r) override;
 
-	void refresh_layout() override;
+	void request_layout() override;
 };
 
 
