@@ -3,6 +3,7 @@
 #include "text_view.h"
 #include "linear_layout.h"
 #include "button.h"
+#include "fill_drawable.h"
 #include <array>
 #include <csignal>
 #include <cstdlib>
@@ -445,15 +446,19 @@ class Cinema {
     	auto* layout = new linear_layout(VERTICAL, maxWidth, maxHeight);
 
     	auto* tv = new text_view(movie->getName());
+    	tv->set_background(new fill_drawable(color::BACKGROUND_CYAN));
     	tv->set_width(maxWidth);
     	tv->set_height(1);
     	layout->add_child(tv);
 
     	for(int r = 0; r < Theater::ROW; r++) {
 		    auto* margin_top = new linear_layout(VERTICAL, maxWidth, 1);
+		    margin_top->set_background(new fill_drawable(color::BACKGROUND_CYAN));
 		    layout->add_child(margin_top);
 
 		    auto* seats = new linear_layout(HORIZONTAL, maxWidth, 1);
+		    seats->set_background(new fill_drawable(color::BACKGROUND_CYAN));
+
 		    for(int c = 0; c < Theater::COLUMN; c++) {
 		    	stringstream st_str;
 		    	st_str << '[';
@@ -484,6 +489,8 @@ class Cinema {
     	w->start_input();
 
     	delete w;
+
+    	console::set_colors(color::WHITE, color::BACKGROUND_BLACK);
     }
 
     // 남는 좌석 표시 함수
@@ -513,7 +520,7 @@ class Cinema {
         	return;
         }
 
-        cout << "예약 성공! 자리: " << rowToChar(row) << column << endl;
+        cout << endl << "예약 성공! 자리: " << rowToChar(row) << column << endl;
     }
 
     void printReservedSeats(int targetMovie) {
