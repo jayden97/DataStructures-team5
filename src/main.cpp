@@ -181,7 +181,7 @@ class Cinema {
             cout << "관리자 모드 진입 중..." << endl;
             while (true) {
                 int status = 0;
-                cout << "비밀번호를 입력하세요  <<";
+                cout << "비밀번호를 입력하세요  <<" << endl << std::flush;
                 cin >> password;
                 if (ADMIN_PASSWORD == stoi(password))
                     status = adminMode();
@@ -286,6 +286,9 @@ class Cinema {
         for (iter = movieList.begin(); iter != movieList.end(); ++iter) {
             if (iter->getNumber() == n)
                 movieList.erase(iter);
+            else {
+                cout << "존재하지 않는 영화 입니다." << endl;
+            }
         }
         cout << "삭제 완료!" << endl;
         saveMovies();
