@@ -96,7 +96,7 @@ void view_group::draw(canvas &c) {
 	for(auto& child : this->children) {
 		drawable* top_background = this->get_top_background();
 
-		if((child->status_flag & FLAG_INVALIDATED) && (this->status_flag & FLAG_REDRAW_BACKGROUND) == 0) {
+		if(top_background != nullptr && (child->status_flag & FLAG_INVALIDATED) && (this->status_flag & FLAG_REDRAW_BACKGROUND) == 0) {
 			std::function<bool(int, int)> mask = [&child](int x, int y) -> bool {
 				return child->get_x() <= x && x < child->get_x() + child->get_width()
 					&& child->get_y() <= y && y < child->get_y() + child->get_height();

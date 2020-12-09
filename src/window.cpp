@@ -1,6 +1,7 @@
 #include "attributes.h"
 #include "platform_dependant.h"
 #include "window.h"
+#include "fill_drawable.h"
 #include <stack>
 #include <cmath>
 #include <limits>
@@ -21,6 +22,10 @@ void window::render() const {
 	if(this->root != nullptr) {
 		this->root->invalidate();
 	}
+}
+
+void window::end_input() {
+	this->wait_keyboard = false;
 }
 
 void window::start_input() {

@@ -12,6 +12,7 @@
 #endif
 
 #include <string>
+#include "attributes.h"
 
 void init_screen();
 

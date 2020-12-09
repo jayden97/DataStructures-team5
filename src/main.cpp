@@ -1,4 +1,8 @@
 #include "platform_dependant.h"
+#include "window.h"
+#include "text_view.h"
+#include "linear_layout.h"
+#include "button.h"
 #include <array>
 #include <csignal>
 #include <cstdlib>
@@ -6,6 +10,7 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <sstream>
 #include <unistd.h>
 
 //관리자 모드 패스워드
@@ -73,7 +78,7 @@ class Movie {
 class Theater {
   public:
     static const int ROW = 10;
-    static const int COLUMN = 20;
+    static const int COLUMN = 6;
 
     Theater(Movie *movie) {
         this->movie = movie;
@@ -85,6 +90,14 @@ class Theater {
 
     Movie *getMovie() const { return this->movie; }
 
+    void unsetSeat(int row, int column) {
+    	if(row >= ROW || column >= COLUMN) {
+    		throw invalid_argument("invalid row & column);");
+    	}
+
+    	this->seat[row][column] = 0;
+    }
+
     void setSeat(int row, int column) {
         if (row >= ROW || column >= COLUMN) {
             throw invalid_argument("invalid row & column");
@@ -93,7 +106,7 @@ class Theater {
         this->seat[row][column] = 1; // TODO set user id here
     }
 
-    int getSeat(int row, int column) {
+    int getSeat(int row, int column) const {
         if (row >= ROW || column >= COLUMN) {
             throw invalid_argument("invalid row & column");
         }
@@ -418,81 +431,143 @@ class Cinema {
         }
     }
 
-    // 남는 좌석 표시 함수
-    void seat(int t) {
-        int temp;
-        temp = t;
-        list<Theater>::iterator reservation;
-        for (reservation = theaterList.begin();
-             reservation != theaterList.end(); ++reservation) {
-            if (reservation->getMovie()->getNumber() == temp) {
-                // wherㄷ
-                for (int i = 0; i < 10; i++)
-                    for (int j = 0; j < 20; j++)
+    void displaySeatWindow(const Theater& theater, int& row, int& column) {
+    	Movie* movie = theater.getMovie();
+    	if(movie == nullptr) {
+    		throw std::invalid_argument("invalid theater given");
+    	}
 
-                        if (reservation->getSeat(i, j) == 0)
-                            cout << "좌석[" << i << "][" << j << "]"
-                                 << endl; /// i want print seat!
-                cout << "이 비어있습니다." << endl;
-            }
-            break;
-        }
+    	int maxWidth, maxHeight;
+    	get_width_height(maxWidth, maxHeight);
+
+    	auto* w = new window(maxWidth, maxHeight);
+
+    	auto* layout = new linear_layout(VERTICAL, maxWidth, maxHeight);
+
+    	auto* tv = new text_view(movie->getName());
+    	tv->set_width(maxWidth);
+    	tv->set_height(1);
+    	layout->add_child(tv);
+
+    	for(int r = 0; r < Theater::ROW; r++) {
+		    auto* margin_top = new linear_layout(VERTICAL, maxWidth, 1);
+		    layout->add_child(margin_top);
+
+		    auto* seats = new linear_layout(HORIZONTAL, maxWidth, 1);
+		    for(int c = 0; c < Theater::COLUMN; c++) {
+		    	stringstream st_str;
+		    	st_str << '[';
+		    	if(theater.getSeat(r, c) == 0) {
+		    		st_str << rowToChar(r) << c;
+		    	}else{
+		    		st_str << "--";
+		    	}
+		    	st_str << ']';
+
+		    	auto* btn = new button(st_str.str());
+		    	btn->set_width(10);
+		    	btn->set_height(1);
+		    	btn->set_click_listener([r, c, &row, &column, &w](view* v) {
+		    		row = r;
+		    		column = c;
+		    		w->end_input();
+		    	});
+
+		    	seats->add_child(btn);
+    		}
+
+		    layout->add_child(seats);
+    	}
+
+    	w->set_view(layout);
+    	w->render();
+    	w->start_input();
+
+    	delete w;
+    }
+
+    // 남는 좌석 표시 함수
+    void seat(int targetMovie, int& row, int& column) {
+    	row = -1, column = -1;
+
+    	for(auto& theater : theaterList) {
+    		Movie* movie = theater.getMovie();
+    		if(movie != nullptr && movie->getNumber() == targetMovie) {
+    			displaySeatWindow(theater, row, column);
+    			break;
+    		}
+    	}
     }
 
     void reserveMovie() {
-        int temp;
-        int row, column;
+        int targetMovie;
         cout << "영화 예약 메뉴입니다." << endl;
-        cout << "원하시는 영화의 번호를 입력해주세요." << endl;
-        cin >> temp;
-        seat(temp); //좌석 표시 함수
-        cout << "원하시는 좌석 번호를 입력해주세요(행, 렬): " << endl;
-        cin >> row >> column;
+        cout << "원하시는 영화의 번호를 입력해주세요." << flush;
+        cin >> targetMovie;
 
-        list<Theater>::iterator Rmovie;
+	    int row, column;
+        seat(targetMovie, row, column); //좌석 표시 함수
 
-        for (Rmovie = theaterList.begin(); Rmovie != theaterList.end();
-             ++Rmovie) {
-            // fail
-            if (Rmovie->getMovie()->getNumber() == temp) {
-
-                if (Rmovie->getSeat(row, column) == 1) {
-                    cout << "이미 예약되었습니다" << endl;
-                }
-
-                Rmovie->setSeat(row, column);
-                cout << "예약해주셔서 고맙습니다." << endl;
-            }
+        if(row == -1 || column == -1) {
+        	cout << "예약에 실패했습니다." << endl;
+        	return;
         }
+
+        cout << "예약 성공! 자리: " << rowToChar(row) << column << endl;
     }
+
+    void printReservedSeats(int targetMovie) {
+    	for(auto& theater : theaterList) {
+    		Movie* movie = theater.getMovie();
+    		if(movie != nullptr && movie->getNumber() == targetMovie) {
+    			for(int row = 0; row < Theater::ROW; row++) {
+    				for(int column = 0; column < Theater::COLUMN; column++) {
+    					if(theater.getSeat(row, column) == 1) {
+    						cout << rowToChar(row) << column << endl;
+    					}
+    				}
+    			}
+
+    			break;
+    		}
+    	}
+    }
+
     void reserveCancel() {
-        int temp;
-        int row, column;
+        int targetMovie;
+        char row;
+        int column;
 
         cout << "예약 취소" << endl;
 
         cout << "영화 번호를 입력하세요: " << endl;
-        cin >> temp;
-        seat(temp);
+        cin >> targetMovie;
+        printReservedSeats(targetMovie);
 
         cout << "좌석번호를 입력해주세요: (행,렬)" << endl;
         cin >> row >> column;
+        row -= 'A';
 
         list<Theater>::iterator Cmovie;
         for (Cmovie = theaterList.begin(); Cmovie != theaterList.end();
              ++Cmovie) {
-            if (Cmovie->getMovie()->getNumber() == temp) {
+            if (Cmovie->getMovie()->getNumber() == targetMovie) {
 
-                if (Cmovie->getSeat(row, column) == -1) {
-                    cout << "예약되어지지 않은 자리입니다. 다시 체크해주세요"
+                if (Cmovie->getSeat(row, column) != 1) {
+                    cout << "예약되지 않은 자리입니다. 다시 체크해주세요"
                          << endl;
                 }
 
-                Cmovie->setSeat(row, column);
+                Cmovie->unsetSeat(row, column);
                 cout << "예약이 취소되었습니다." << endl;
                 break;
             }
         }
+    }
+
+    static char rowToChar(int row) {
+	    char rowChars[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N'};
+	    return rowChars[row % 13];
     }
 
   private:
