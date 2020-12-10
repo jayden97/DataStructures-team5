@@ -189,6 +189,7 @@ class Cinema {
                     cout << "비밀번호가 틀립니다." << endl;
 
                 if (status == 1) {
+                    showMenu();
                     return;
                 }
             }
@@ -302,7 +303,6 @@ class Cinema {
         }
     }
 
-    //영화 목록을 출력
     void readMovies() {
         int fd = open(MOVIE_FILE, O_CREAT | O_RDONLY, 0644);
         if (fd == -1) {
