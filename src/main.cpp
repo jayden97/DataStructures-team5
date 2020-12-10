@@ -294,10 +294,25 @@ class Cinema {
         printMovieList();
         int n = inputMenu();
 
+        Movie* movie = nullptr;
+        for(auto& theater : theaterList) {
+        	Movie* m = theater.getMovie();
+        	if(m != nullptr && m->getNumber() == n) {
+        		movie = m;
+        		break;
+        	}
+        }
+
+        if(movie == nullptr) {
+        	cout << "영화가 존재하지 않습니다." << endl;
+        }
+
         list<Movie>::iterator iter;
-        for (iter = movieList.begin(); iter != movieList.end(); ++iter) {
-            if (iter->getNumber() == n)
-                movieList.erase(iter);
+	    for (iter = movieList.begin(); iter != movieList.end(); ++iter) {
+            if (&(*iter) == movie) {
+	            movieList.erase(iter);
+	            break;
+            }
         }
         cout << "삭제 완료!" << endl;
         saveMovies();
@@ -432,7 +447,7 @@ class Cinema {
                 if(count == 0) {
                 	cout << "예약된 자리가 없습니다." << endl;
                 }
-	            break;
+	            return;
             }
         }
 
@@ -609,13 +624,15 @@ class Cinema {
 Cinema *Cinema::instance;
 
 int main(int argc, char const *argv[]) {
-    Cinema cinema;
+	clear_screen();
+
+    auto* cinema = new Cinema;
 
     if (signal(SIGUSR1, Cinema::signalHandler) == SIG_ERR) {
         perror("adminSigHandler() error!");
     }
 
-    cinema.startProgram();
+    cinema->startProgram();
 
     return 0;
 }
