@@ -211,8 +211,7 @@ class Cinema {
 
     //관리자 모드 함수
     int adminMode() {
-        bool q = true;
-        while (q) {
+        while (true) {
             showAdminMenu();
             switch (inputMenu()) {
             case 1:
@@ -222,8 +221,7 @@ class Cinema {
                 deleteMovieList();
                 break;
             case 3:
-                return 1; //바로 자식프로세스를 죽이고 메인화면으로 넘어가는걸
-                          //모르겠음ㅠ
+                exit(0);
             default:
                 cout << "잘못입력하셨습니다." << endl;
             }
@@ -236,7 +234,7 @@ class Cinema {
         while (true) {
             showMenu();
 
-            switch (int menuNum = inputMenu()) {
+            switch (inputMenu()) {
             case 1:
                 searchMovie();
                 break;
@@ -250,7 +248,7 @@ class Cinema {
                 listReserve();
                 break;
             case 5:
-                break;
+                return;
             default:
                 cout << "잘못입력하셨습니다. 다시 입력해 주세요!" << endl;
                 break;
@@ -419,20 +417,29 @@ class Cinema {
         for (reservation = theaterList.begin();
              reservation != theaterList.end(); ++reservation) {
             if (reservation->getMovie()->getNumber() == temp) {
-                // wherㄷ
-                for (int i = 0; i < 10; i++)
-                    for (int j = 0; j < 20; j++)
+                int count = 0;
+                for (int i = 0; i < Theater::ROW; i++)
+                    for (int j = 0; j < Theater::COLUMN; j++) {
+	                    if (reservation->getSeat(i, j) == 1) {
+		                    cout << rowToChar(i) << j << "]"
+		                         << "자리에 예약되어있습니다."
+		                         << endl; /// i want print seat!
 
-                        if (reservation->getSeat(i, j) == 1)
-                            cout << "좌석[" << i << "][" << j << "]"
-                                 << "자리에 예약되어있습니다."
-                                 << endl; /// i want print seat!
+                            count++;
+	                    }
+                    }
+
+                if(count == 0) {
+                	cout << "예약된 자리가 없습니다." << endl;
+                }
+	            break;
             }
-            break;
         }
+
+        cout << "영화를 찾을 수 없습니다" << endl;
     }
 
-    void displaySeatWindow(const Theater& theater, int& row, int& column) {
+    void displaySeatWindow(const Theater& theater, bool reserveMode, int& row, int& column) {
     	Movie* movie = theater.getMovie();
     	if(movie == nullptr) {
     		throw std::invalid_argument("invalid theater given");
@@ -463,9 +470,17 @@ class Cinema {
 		    	stringstream st_str;
 		    	st_str << '[';
 		    	if(theater.getSeat(r, c) == 0) {
-		    		st_str << rowToChar(r) << c;
+		    		if(reserveMode) {
+					    st_str << rowToChar(r) << c;
+				    }else{
+		    			st_str << "--";
+		    		}
 		    	}else{
-		    		st_str << "--";
+		    		if(reserveMode) {
+					    st_str << "--";
+				    }else{
+		    			st_str << rowToChar(r) << c;
+		    		}
 		    	}
 		    	st_str << ']';
 
@@ -485,12 +500,16 @@ class Cinema {
     	}
 
     	w->set_view(layout);
+
+    	init_screen();
     	w->render();
     	w->start_input();
 
     	delete w;
 
     	console::set_colors(color::WHITE, color::BACKGROUND_BLACK);
+    	close_screen();
+    	clear_screen();
     }
 
     // 남는 좌석 표시 함수
@@ -500,10 +519,19 @@ class Cinema {
     	for(auto& theater : theaterList) {
     		Movie* movie = theater.getMovie();
     		if(movie != nullptr && movie->getNumber() == targetMovie) {
-    			displaySeatWindow(theater, row, column);
-    			break;
+    			displaySeatWindow(theater, true, row, column);
+
+    			if(row == -1 || column == -1) {
+    				cout << "좌석을 선택하지 않았습니다.";
+    			}
+
+    			theater.setSeat(row, column);
+			    cout << endl << "예약 성공! 자리: " << rowToChar(row) << column << endl;
+    			return;
     		}
     	}
+
+    	cout << "영화를 찾을 수 없습니다" << endl;
     }
 
     void reserveMovie() {
@@ -514,13 +542,6 @@ class Cinema {
 
 	    int row, column;
         seat(targetMovie, row, column); //좌석 표시 함수
-
-        if(row == -1 || column == -1) {
-        	cout << "예약에 실패했습니다." << endl;
-        	return;
-        }
-
-        cout << endl << "예약 성공! 자리: " << rowToChar(row) << column << endl;
     }
 
     void printReservedSeats(int targetMovie) {
@@ -542,34 +563,33 @@ class Cinema {
 
     void reserveCancel() {
         int targetMovie;
-        char row;
-        int column;
-
         cout << "예약 취소" << endl;
 
         cout << "영화 번호를 입력하세요: " << endl;
         cin >> targetMovie;
-        printReservedSeats(targetMovie);
 
-        cout << "좌석번호를 입력해주세요: (행,렬)" << endl;
-        cin >> row >> column;
-        row -= 'A';
+        for(auto& theater : theaterList) {
+        	Movie* movie = theater.getMovie();
+        	if(movie != nullptr && movie->getNumber() == targetMovie) {
+        		int row, column;
+        		displaySeatWindow(theater, false, row, column);
+        		if(row == -1 || column == -1) {
+        			cout << "좌석을 선택하지 않았습니다." << endl;
+        			return;
+        		}
 
-        list<Theater>::iterator Cmovie;
-        for (Cmovie = theaterList.begin(); Cmovie != theaterList.end();
-             ++Cmovie) {
-            if (Cmovie->getMovie()->getNumber() == targetMovie) {
+        		if(theater.getSeat(row, column) == 0) {
+        			cout << "예약되지 않은 자리입니다." << endl;
+        		}else{
+        			theater.unsetSeat(row, column);
+        			cout << endl << rowToChar(row) << column << " 자리의 예약을 취소했습니다" << endl;
+        		}
 
-                if (Cmovie->getSeat(row, column) != 1) {
-                    cout << "예약되지 않은 자리입니다. 다시 체크해주세요"
-                         << endl;
-                }
-
-                Cmovie->unsetSeat(row, column);
-                cout << "예약이 취소되었습니다." << endl;
-                break;
-            }
+        		return;
+        	}
         }
+
+        cout << "영화가 존재하지 않습니다." << endl;
     }
 
     static char rowToChar(int row) {
@@ -589,8 +609,6 @@ class Cinema {
 Cinema *Cinema::instance;
 
 int main(int argc, char const *argv[]) {
-    init_screen();
-
     Cinema cinema;
 
     if (signal(SIGUSR1, Cinema::signalHandler) == SIG_ERR) {
@@ -598,10 +616,6 @@ int main(int argc, char const *argv[]) {
     }
 
     cinema.startProgram();
-
-    while (1) {
-        pause();
-    }
 
     return 0;
 }

@@ -18,7 +18,9 @@ void init_screen();
 
 int get_char();
 
-void close();
+void close_screen();
+
+void clear_screen();
 
 void cursor_move(int x, int y);
 

@@ -1,6 +1,12 @@
 #include "attributes.h"
 #include "platform_dependant.h"
 
+#include <iostream>
+
+void clear_screen() {
+	std::cout << "\x1b[H\x1b[J";
+}
+
 #if defined WIN32
 
 #include <Windows.h>
@@ -15,16 +21,12 @@ void init_screen() {
 	SetConsoleMode(handle, dwMode);
 }
 
-void close() {
+void close_screen() {
 
 }
 
 int get_char() {
 	return _getch();
-}
-
-void close() {
-
 }
 
 void get_width_height(int& x, int& y) {
@@ -36,17 +38,21 @@ void get_width_height(int& x, int& y) {
 #else
 
 #include <termios.h>
-#include <curses.h>
 #include <unordered_map>
 #include "console.h"
 #include <sstream>
-#include <iostream>
+
+struct termios* old_tty_attr = nullptr;
 
 void init_screen() {
 	// set terminal in raw mode
 	struct termios tty_attr{};
 
-	tcgetattr(0,&tty_attr);
+	tcgetattr(0, &tty_attr);
+	if(old_tty_attr == nullptr) {
+		old_tty_attr = (struct termios*) malloc(sizeof(struct termios));
+	}
+	*old_tty_attr = tty_attr;
 
 	tty_attr.c_lflag &= (~(ICANON|ECHO));
 	tty_attr.c_cc[VTIME] = 0;
@@ -59,7 +65,10 @@ int get_char() {
 	return getchar();
 }
 
-void close() {
+void close_screen() {
+	if(old_tty_attr != nullptr) {
+		tcsetattr(0, TCSANOW, old_tty_attr);
+	}
 }
 
 void cursor_move(int x, int y) {
