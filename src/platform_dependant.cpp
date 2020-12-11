@@ -1,74 +1,12 @@
 #include "attributes.h"
+#include "console.h"
 #include "platform_dependant.h"
+#include <sstream>
 
 #include <iostream>
 
 void clear_screen() {
 	std::cout << "\x1b[H\x1b[J";
-}
-
-#if defined WIN32
-
-#include <Windows.h>
-#include <conio.h>
-
-void init_screen() {
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	DWORD dwMode = 0;
-	GetConsoleMode(handle, &dwMode);
-	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-	SetConsoleMode(handle, dwMode);
-}
-
-void close_screen() {
-
-}
-
-int get_char() {
-	return _getch();
-}
-
-void get_width_height(int& x, int& y) {
-	CONSOLE_SCREEN_BUFFER_INFO GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-    x = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-    y = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-}
-
-#else
-
-#include <termios.h>
-#include <unordered_map>
-#include "console.h"
-#include <sstream>
-
-struct termios* old_tty_attr = nullptr;
-
-void init_screen() {
-	// set terminal in raw mode
-	struct termios tty_attr{};
-
-	tcgetattr(0, &tty_attr);
-	if(old_tty_attr == nullptr) {
-		old_tty_attr = (struct termios*) malloc(sizeof(struct termios));
-	}
-	*old_tty_attr = tty_attr;
-
-	tty_attr.c_lflag &= (~(ICANON|ECHO));
-	tty_attr.c_cc[VTIME] = 0;
-	tty_attr.c_cc[VMIN] = 1;
-
-	tcsetattr(0,TCSANOW,&tty_attr);
-}
-
-int get_char() {
-	return getchar();
-}
-
-void close_screen() {
-	if(old_tty_attr != nullptr) {
-		tcsetattr(0, TCSANOW, old_tty_attr);
-	}
 }
 
 void cursor_move(int x, int y) {
@@ -125,6 +63,67 @@ arrow is_arrow_key(int c) {
 	}
 
 	return arrow::NONE;
+}
+
+#if defined WIN32
+
+#include <Windows.h>
+#include <conio.h>
+
+void init_screen() {
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	DWORD dwMode = 0;
+	GetConsoleMode(handle, &dwMode);
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	SetConsoleMode(handle, dwMode);
+}
+
+void close_screen() {
+
+}
+
+int get_char() {
+	return _getch();
+}
+
+void get_width_height(int& x, int& y) {
+	CONSOLE_SCREEN_BUFFER_INFO GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    x = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    y = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+}
+
+#else
+
+#include <termios.h>
+
+struct termios* old_tty_attr = nullptr;
+
+void init_screen() {
+	// set terminal in raw mode
+	struct termios tty_attr{};
+
+	tcgetattr(0, &tty_attr);
+	if(old_tty_attr == nullptr) {
+		old_tty_attr = (struct termios*) malloc(sizeof(struct termios));
+	}
+	*old_tty_attr = tty_attr;
+
+	tty_attr.c_lflag &= (~(ICANON|ECHO));
+	tty_attr.c_cc[VTIME] = 0;
+	tty_attr.c_cc[VMIN] = 1;
+
+	tcsetattr(0,TCSANOW,&tty_attr);
+}
+
+void close_screen() {
+	if(old_tty_attr != nullptr) {
+		tcsetattr(0, TCSANOW, old_tty_attr);
+	}
+}
+
+int get_char() {
+	return getchar();
 }
 
 void get_width_height(int& x, int& y) {
